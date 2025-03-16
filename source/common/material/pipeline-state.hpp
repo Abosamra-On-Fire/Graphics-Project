@@ -41,7 +41,36 @@ namespace our {
         // This function should set the OpenGL options to the values specified by this structure
         // For example, if faceCulling.enabled is true, you should call glEnable(GL_CULL_FACE), otherwise, you should call glDisable(GL_CULL_FACE)
         void setup() const {
-            //TODO: (Req 4) Write this function
+            // Face Culling
+            if (faceCulling.enabled) {
+                glEnable(GL_CULL_FACE);
+                glCullFace(faceCulling.culledFace);
+                glFrontFace(faceCulling.frontFace);
+            } else {
+                glDisable(GL_CULL_FACE);
+            }
+        
+            // Depth Testing
+            if (depthTesting.enabled) {
+                glEnable(GL_DEPTH_TEST);
+                glDepthFunc(depthTesting.function);
+            } else {
+                glDisable(GL_DEPTH_TEST);
+            }
+        
+            // Blending
+            if (blending.enabled) {
+                glEnable(GL_BLEND);
+                glBlendEquation(blending.equation);
+                glBlendFunc(blending.sourceFactor, blending.destinationFactor);
+                glBlendColor(blending.constantColor[0], blending.constantColor[1], blending.constantColor[2], blending.constantColor[3]);
+            } else {
+                glDisable(GL_BLEND);
+            }
+        
+            // Color and Depth Mask
+            glColorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
+            glDepthMask(depthMask ? GL_TRUE : GL_FALSE);
         }
 
         // Given a json object, this function deserializes a PipelineState structure

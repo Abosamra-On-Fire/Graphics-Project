@@ -27,7 +27,7 @@ out Varyings {
 
 //TODO: (Req 1) Finish this shader
 uniform vec2 translation = vec2(0.0, 0.0);
-uniform vec2 scale = vec2(0.0, 0.0);
+uniform vec2 scale = vec2(1.0, 1.0);
 
 void main(){
     vec3 postion = positions[gl_VertexID];
