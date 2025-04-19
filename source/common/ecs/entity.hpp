@@ -96,8 +96,8 @@ namespace our {
         void deleteComponent(T const* component){
             //TODO: (Req 8) Go through the components list and find the given component "component".
             // If found, delete the found component and remove it from the components list
-            for(auto it = components.begin(); it != components.end(); ++it){
-                if(dynamic_cast<T*>(*it)){
+            for(auto it = components.begin(); it != components.end(); ++it) {
+                if(*it == component) {
                     delete *it;
                     components.erase(it);
                     return;
