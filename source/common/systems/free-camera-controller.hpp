@@ -20,6 +20,7 @@ namespace our
     class FreeCameraControllerSystem {
         Application* app; // The application in which the state runs
         bool mouse_locked = false; // Is the mouse locked
+        bool is_z_clicked=false;
 
     public:
         // When a state enters, it should call this function and give it the pointer to the application
@@ -44,6 +45,15 @@ namespace our
             Entity* entity = camera->getOwner();
 
             // If the left mouse button is pressed, we lock and hide the mouse. This common in First Person Games.
+            if(!is_z_clicked)
+            {
+                if(!mouse_locked){
+                    app->getMouse().lockMouse(app->getWindow());
+                    mouse_locked = true;
+                }
+                
+            }
+           else { 
             if(app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1) && !mouse_locked){
                 app->getMouse().lockMouse(app->getWindow());
                 mouse_locked = true;
@@ -52,6 +62,7 @@ namespace our
                 app->getMouse().unlockMouse(app->getWindow());
                 mouse_locked = false;
             }
+        }
 
             // We get a reference to the entity's position and rotation
             glm::vec3& position = entity->localTransform.position;
@@ -59,11 +70,21 @@ namespace our
 
             // If the left mouse button is pressed, we get the change in the mouse location
             // and use it to update the camera rotation
-            if(app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1)){
+            if(!is_z_clicked)
+            {
+                glm::vec2 delta = app->getMouse().getMouseDelta();
+                rotation.x -= delta.y * controller->rotationSensitivity;
+                rotation.y -= delta.x * controller->rotationSensitivity;
+
+            }
+            else 
+            {
+                if(app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1)){
                 glm::vec2 delta = app->getMouse().getMouseDelta();
                 rotation.x -= delta.y * controller->rotationSensitivity; // The y-axis controls the pitch
                 rotation.y -= delta.x * controller->rotationSensitivity; // The x-axis controls the yaw
             }
+        }
 
             // We prevent the pitch from exceeding a certain angle from the XZ plane to prevent gimbal locks
             if(rotation.x < -glm::half_pi<float>() * 0.99f) rotation.x = -glm::half_pi<float>() * 0.99f;
@@ -98,6 +119,9 @@ namespace our
             // A & D moves the player left or right 
             if(app->getKeyboard().isPressed(GLFW_KEY_D)) position += right * (deltaTime * current_sensitivity.x);
             if(app->getKeyboard().isPressed(GLFW_KEY_A)) position -= right * (deltaTime * current_sensitivity.x);
+            if(app->getKeyboard().isPressed(GLFW_KEY_Z) ) {
+                is_z_clicked = !is_z_clicked;
+            }
         }
 
         // When the state exits, it should call this function to ensure the mouse is unlocked
