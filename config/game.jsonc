@@ -33,14 +33,16 @@
                 "wood": "assets/textures/wood.jpg",
                 "glass": "assets/textures/glass-panels.png",
                 "monkey": "assets/textures/monkey.png",
-                "stone": "assets/textures/ice_snow.jpg"
+                "stone": "assets/textures/ice_snow.jpg",
+                "gold": "assets/textures/gold.jpg"
             },
             "meshes":{
                 "cube": "assets/models/cube.obj",
                 "monkey": "assets/models/monkey.obj",
                 "stone": "assets/models/stone.obj",
                 "plane": "assets/models/plane.obj",
-                "sphere": "assets/models/sphere.obj"
+                "sphere": "assets/models/sphere.obj",
+                "arrow": "assets/models/arrow_2.obj"
             },
             "samplers":{
                 "default":{},
@@ -157,6 +159,16 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "moon",
+                    "sampler": "default"
+                },
+                "arrow_material": {
+                    "type": "textured",
+                    "shader": "textured",
+                    "pipelineState": {
+                        "depthTesting": { "enabled": true }
+                    },
+                    "tint": [1, 1, 1, 1],
+                    "texture": "gold",
                     "sampler": "default"
                 }
             }
@@ -291,5 +303,10 @@
                 ]
             }
         ]
+    },
+    "arrow_config": {
+        "scale": [1, 1, 1],
+        "angularVelocity": [0, 0, 0],
+        "speed": 15
     }
 }

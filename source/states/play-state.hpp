@@ -7,24 +7,23 @@
 #include <systems/free-camera-controller.hpp>
 #include <systems/movement.hpp>
 #include <asset-loader.hpp>
+#include <components/arrow.h>
 
 // This state shows how to use the ECS framework and deserialization.
-class Playstate: public our::State {
-
+class Playstate : public our::State {
     our::World world;
     our::ForwardRenderer renderer;
     our::FreeCameraControllerSystem cameraController;
     our::MovementSystem movementSystem;
-
     void onInitialize() override {
         // First of all, we get the scene configuration from the app config
-        auto& config = getApp()->getConfig()["scene"];
+        auto &config = getApp()->getConfig()["scene"];
         // If we have assets in the scene config, we deserialize them
-        if(config.contains("assets")){
+        if (config.contains("assets")) {
             our::deserializeAllAssets(config["assets"]);
         }
         // If we have a world in the scene config, we use it to populate our world
-        if(config.contains("world")){
+        if (config.contains("world")) {
             world.deserialize(config["world"]);
         }
         // We initialize the camera controller system since it needs a pointer to the app
@@ -36,15 +35,15 @@ class Playstate: public our::State {
 
     void onDraw(double deltaTime) override {
         // Here, we just run a bunch of systems to control the world logic
-        movementSystem.update(&world, (float)deltaTime);
-        cameraController.update(&world, (float)deltaTime);
+        movementSystem.update(&world, (float) deltaTime);
+        cameraController.update(&world, (float) deltaTime);
         // And finally we use the renderer system to draw the scene
         renderer.render(&world);
 
         // Get a reference to the keyboard object
-        auto& keyboard = getApp()->getKeyboard();
+        auto &keyboard = getApp()->getKeyboard();
 
-        if(keyboard.justPressed(GLFW_KEY_ESCAPE)){
+        if (keyboard.justPressed(GLFW_KEY_ESCAPE)) {
             // If the escape  key is pressed in this frame, go to the play state
             getApp()->changeState("menu");
         }
@@ -59,5 +58,67 @@ class Playstate: public our::State {
         world.clear();
         // and we delete all the loaded assets to free memory on the RAM and the VRAM
         our::clearAllAssets();
+    }
+
+    void createArrow(glm::vec3 camera_position, glm::vec3 camera_front_direction,glm::vec3 up_dir) {
+        our::Entity *arrow_entity = world.add();
+        auto arrow_config = getApp()->getConfig()["arrow_config"];
+
+        // Set transform
+        arrow_entity->localTransform.position = camera_position;
+        if (arrow_config.contains("scale")) {
+            auto scaleArray = arrow_config["scale"];
+            arrow_entity->localTransform.scale = glm::vec3(
+                scaleArray[0].get<float>(),
+                scaleArray[1].get<float>(),
+                scaleArray[2].get<float>()
+            );
+        }
+
+
+
+        // Normalize the direction
+        camera_front_direction = glm::normalize(camera_front_direction);
+
+        // Calculate the rotation using quatLookAt
+        // This assumes your arrow model's natural forward direction is -Z
+        // and up direction is +Y
+        up_dir=glm::normalize(up_dir);
+        glm::quat rotation = glm::quatLookAt(camera_front_direction, up_dir);
+
+        // If your arrow model is oriented differently, you might need an additional correction
+        // For example, if it's pointing along +X by default:
+        // glm::quat correction = glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        // rotation = rotation * correction;
+
+        // Convert to Euler angles (if your system uses them)
+        arrow_entity->localTransform.rotation = glm::eulerAngles(rotation);
+
+        // Add movement component
+        auto *movement = arrow_entity->addComponent<our::MovementComponent>();
+        movement->linearVelocity = camera_front_direction * arrow_config["speed"].get<float>();
+        if (arrow_config.contains("angularVelocity")) {
+            auto scaleArray = arrow_config["angularVelocity"];
+            movement->angularVelocity = glm::vec3(
+                scaleArray[0].get<float>(),
+                scaleArray[1].get<float>(),
+                scaleArray[2].get<float>()
+            );
+        }
+
+        // Add rendering
+        auto *renderer = arrow_entity->addComponent<our::MeshRendererComponent>();
+        renderer->mesh = our::AssetLoader<our::Mesh>::get("arrow");
+        renderer->material = our::AssetLoader<our::Material>::get("arrow_material");
+
+        // Add Arrow Component
+        arrow_entity->addComponent<our::ArrowComponent>();
+    }
+
+    void onMouseButtonEvent(int button, int action, int mods) override {
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+            createArrow(cameraController.get_last_camera_postion(),
+                        cameraController.get_last_front_direction(),cameraController.get_last_up_direction());
+        }
     }
 };
