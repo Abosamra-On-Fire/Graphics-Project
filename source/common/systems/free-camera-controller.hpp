@@ -21,7 +21,6 @@ namespace our {
         bool z_is_clicked = false;
         glm::vec3 last_front_direction = {0.0f, 0.0f, -1.0f}; //currently used for arrow
         glm::vec3 last_camera_position = {0.0f, 0.0f, 0.0f}; //currently used for arrow
-        glm::vec3 last_camera_up_direction={0,1,0};
     public:
         // When a state enters, it should call this function and give it the pointer to the application
         void enter(Application *app) {
@@ -118,7 +117,6 @@ namespace our {
             }
             this->last_front_direction= front;
             this->last_camera_position= position;
-            this->last_camera_up_direction= up;
         }
 
         // When the state exits, it should call this function to ensure the mouse is unlocked
@@ -134,9 +132,6 @@ namespace our {
         }
         glm::vec3 get_last_front_direction() {
             return this->last_front_direction;
-        }
-        glm::vec3 get_last_up_direction() {
-            return this->last_camera_up_direction;
         }
     };
 }

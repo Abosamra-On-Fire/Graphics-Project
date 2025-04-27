@@ -60,7 +60,7 @@ class Playstate : public our::State {
         our::clearAllAssets();
     }
 
-    void createArrow(glm::vec3 camera_position, glm::vec3 camera_front_direction,glm::vec3 up_dir) {
+    void createArrow(glm::vec3 camera_position, glm::vec3 camera_front_direction) {
         our::Entity *arrow_entity = world.add();
         auto arrow_config = getApp()->getConfig()["arrow_config"];
 
@@ -74,25 +74,11 @@ class Playstate : public our::State {
                 scaleArray[2].get<float>()
             );
         }
-
-
-
-        // Normalize the direction
-        camera_front_direction = glm::normalize(camera_front_direction);
-
-        // Calculate the rotation using quatLookAt
-        // This assumes your arrow model's natural forward direction is -Z
-        // and up direction is +Y
-        up_dir=glm::normalize(up_dir);
-        glm::quat rotation = glm::quatLookAt(camera_front_direction, up_dir);
-
-        // If your arrow model is oriented differently, you might need an additional correction
-        // For example, if it's pointing along +X by default:
-        // glm::quat correction = glm::angleAxis(glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        // rotation = rotation * correction;
-
-        // Convert to Euler angles (if your system uses them)
-        arrow_entity->localTransform.rotation = glm::eulerAngles(rotation);
+        glm::vec3 dir = glm::normalize(camera_front_direction);
+        float yaw = atan2(dir.x, dir.z);
+        float roll = -asin(dir.y);
+        float correction = glm::half_pi<float>();
+        arrow_entity->localTransform.rotation = glm::vec3(0, yaw + correction, roll);
 
         // Add movement component
         auto *movement = arrow_entity->addComponent<our::MovementComponent>();
@@ -118,7 +104,7 @@ class Playstate : public our::State {
     void onMouseButtonEvent(int button, int action, int mods) override {
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
             createArrow(cameraController.get_last_camera_postion(),
-                        cameraController.get_last_front_direction(),cameraController.get_last_up_direction());
+                        cameraController.get_last_front_direction());
         }
     }
 };
