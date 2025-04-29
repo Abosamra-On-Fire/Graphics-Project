@@ -44,7 +44,10 @@
                 "crossbow": "assets/models/crossbow.obj",
                 "monster": "assets/models/monster.obj",
                 "plane": "assets/models/plane.obj",
-                "sphere": "assets/models/sphere.obj"
+                "igloo": "assets/models/igloo.obj",
+                "coins": "assets/models/coins.obj",
+                "sphere": "assets/models/sphere.obj",
+                "arrow": "assets/models/arrow_2.obj"
             },
             "samplers":{
                 "default":{},
