@@ -60,7 +60,7 @@ namespace our {
                     mouse_locked = false;
                 }
             }
-
+        
             // We get a reference to the entity's position and rotation
             glm::vec3 &position = entity->localTransform.position;
             glm::vec3 &rotation = entity->localTransform.rotation;
@@ -78,45 +78,46 @@ namespace our {
                     rotation.y -= delta.x * controller->rotationSensitivity; // The x-axis controls the yaw
                 }
             }
-
+        
             // We prevent the pitch from exceeding a certain angle from the XZ plane to prevent gimbal locks
             if (rotation.x < -glm::half_pi<float>() * 0.99f) rotation.x = -glm::half_pi<float>() * 0.99f;
             if (rotation.x > glm::half_pi<float>() * 0.99f) rotation.x = glm::half_pi<float>() * 0.99f;
             // This is not necessary, but whenever the rotation goes outside the 0 to 2*PI range, we wrap it back inside.
             // This could prevent floating point error if the player rotates in single direction for an extremely long time.
             rotation.y = glm::wrapAngle(rotation.y);
-
+        
             // We update the camera fov based on the mouse wheel scrolling amount
             float fov = camera->fovY + app->getMouse().getScrollOffset().y * controller->fovSensitivity;
             fov = glm::clamp(fov, glm::pi<float>() * 0.01f, glm::pi<float>() * 0.99f);
             // We keep the fov in the range 0.01*PI to 0.99*PI
             camera->fovY = fov;
-
+        
             // We get the camera model matrix (relative to its parent) to compute the front, up and right directions
             glm::mat4 matrix = entity->localTransform.toMat4();
-
+        
             glm::vec3 front = glm::vec3(matrix * glm::vec4(0, 0, -1, 0)),
-                    up = glm::vec3(matrix * glm::vec4(0, 1, 0, 0)),
-                    right = glm::vec3(matrix * glm::vec4(1, 0, 0, 0));
+                      right = glm::vec3(matrix * glm::vec4(1, 0, 0, 0));
+        
+            // Remove the Y component from front and right vectors to prevent any vertical movement
+            front.y = 0.0f;
+            front = glm::normalize(front);
+            right.y = 0.0f;
+            right = glm::normalize(right);
+        
             glm::vec3 current_sensitivity = controller->positionSensitivity;
             // If the LEFT SHIFT key is pressed, we multiply the position sensitivity by the speed up factor
-            if (app->getKeyboard().isPressed(GLFW_KEY_LEFT_SHIFT)) current_sensitivity *= controller->speedupFactor;
-
-            // We change the camera position based on the keys WASD/QE
-            // S & W moves the player back and forth
-            if (app->getKeyboard().isPressed(GLFW_KEY_W)) position += front * (deltaTime * current_sensitivity.z);
-            if (app->getKeyboard().isPressed(GLFW_KEY_S)) position -= front * (deltaTime * current_sensitivity.z);
-            // Q & E moves the player up and down
-            if (app->getKeyboard().isPressed(GLFW_KEY_Q)) position += up * (deltaTime * current_sensitivity.y);
-            if (app->getKeyboard().isPressed(GLFW_KEY_E)) position -= up * (deltaTime * current_sensitivity.y);
-            // A & D moves the player left or right
-            if (app->getKeyboard().isPressed(GLFW_KEY_D)) position += right * (deltaTime * current_sensitivity.x);
-            if (app->getKeyboard().isPressed(GLFW_KEY_A)) position -= right * (deltaTime * current_sensitivity.x);
-            if (app->getKeyboard().isPressed(GLFW_KEY_Z)) {
-                z_is_clicked = !z_is_clicked;
-            }
-            this->last_front_direction= front;
-            this->last_camera_position= position;
+            if(app->getKeyboard().isPressed(GLFW_KEY_LEFT_SHIFT)) current_sensitivity *= controller->speedupFactor;
+        
+            // We change the camera position based on the keys WASD
+            // S & W moves the player back and forth (only in XZ plane)
+            if(app->getKeyboard().isPressed(GLFW_KEY_W)) position += front * (deltaTime * current_sensitivity.z);
+            if(app->getKeyboard().isPressed(GLFW_KEY_S)) position -= front * (deltaTime * current_sensitivity.z);
+            // A & D moves the player left or right (only in XZ plane)
+            if(app->getKeyboard().isPressed(GLFW_KEY_D)) position += right * (deltaTime * current_sensitivity.x);
+            if(app->getKeyboard().isPressed(GLFW_KEY_A)) position -= right * (deltaTime * current_sensitivity.x);
+            
+            // Lock the Y position to its initial value (optional, if you want to completely prevent any Y movement)
+            // position.y = initialYPosition; // You would need to store this when the camera is initialized
         }
 
         // When the state exits, it should call this function to ensure the mouse is unlocked
