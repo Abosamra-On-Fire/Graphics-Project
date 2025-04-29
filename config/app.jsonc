@@ -2,7 +2,7 @@
     "start-scene": "menu",
     "window":
     {
-        "title":"Default Game Window",
+        "title":"Shatter Frost Game Window",
         "size":{
             "width":1280,
             "height":720
@@ -130,6 +130,7 @@
         "world":[
             {
                 "position": [0, 0, 10],
+                "name": "camera",
                 "components": [
                     {
                         "type": "Camera"
@@ -155,6 +156,7 @@
             },
             {
                 "rotation": [-45, 0, 0],
+                "name": "monkey",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -184,6 +186,7 @@
                 "position": [0, 1, 2],
                 "rotation": [0, 0, 0],
                 "scale": [2, 2, 2],
+                "name":"cube",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -196,6 +199,7 @@
                 "position": [0, 1, -2],
                 "rotation": [0, 0, 0],
                 "scale": [2, 2, 2],
+                "name":"cube",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -208,6 +212,7 @@
                 "position": [2, 1, 0],
                 "rotation": [0, 90, 0],
                 "scale": [2, 2, 2],
+                "name": "cube",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -220,6 +225,7 @@
                 "position": [-2, 1, 0],
                 "rotation": [0, 90, 0],
                 "scale": [2, 2, 2],
+                "name": "cube",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -232,6 +238,7 @@
                 "position": [0, 3, 0],
                 "rotation": [90, 0, 0],
                 "scale": [2, 2, 2],
+                "name": "cube",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -244,6 +251,7 @@
                 "position": [0, 10, 0],
                 "rotation": [45, 45, 0],
                 "scale": [5, 5, 5],
+                "name": "moon",
                 "components": [
                     {
                         "type": "Mesh Renderer",

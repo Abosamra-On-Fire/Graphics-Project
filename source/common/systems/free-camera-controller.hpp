@@ -21,7 +21,7 @@ namespace our
         Application* app; // The application in which the state runs
         bool mouse_locked = false; // Is the mouse locked
         bool is_z_clicked=false;
-
+        bool is_collided=false;
     public:
         // When a state enters, it should call this function and give it the pointer to the application
         void enter(Application* app){
@@ -29,7 +29,7 @@ namespace our
         }
 
         // This should be called every frame to update all entities containing a FreeCameraControllerComponent 
-        void update(World* world, float deltaTime) {
+        void update(World* world, float deltaTime,bool is_collided) {
             // First of all, we search for an entity containing both a CameraComponent and a FreeCameraControllerComponent
             // As soon as we find one, we break
             CameraComponent* camera = nullptr;
@@ -101,9 +101,11 @@ namespace our
             // We get the camera model matrix (relative to its parent) to compute the front, up and right directions
             glm::mat4 matrix = entity->localTransform.toMat4();
 
-            glm::vec3 front = glm::vec3(matrix * glm::vec4(0, 0, -1, 0)),
-                      up = glm::vec3(matrix * glm::vec4(0, 1, 0, 0)), 
-                      right = glm::vec3(matrix * glm::vec4(1, 0, 0, 0));
+            glm::vec3 front = glm::vec3(matrix * glm::vec4(0, 0, -1, 0));
+                    //   back= glm::vec3(matrix * glm::vec4(0, 0, 1, 0)),
+                    //   up = glm::vec3(matrix * glm::vec4(0, 1, 0, 0)), 
+                    //   right = glm::vec3(matrix * glm::vec4(1, 0, 0, 0)),
+                    //   left = glm::vec3(matrix * glm::vec4(-1, 0, 0, 0));
 
             glm::vec3 current_sensitivity = controller->positionSensitivity;
             // If the LEFT SHIFT key is pressed, we multiply the position sensitivity by the speed up factor
@@ -111,14 +113,16 @@ namespace our
 
             // We change the camera position based on the keys WASD/QE
             // S & W moves the player back and forth
-            if(app->getKeyboard().isPressed(GLFW_KEY_W)) position += front * (deltaTime * current_sensitivity.z);
-            if(app->getKeyboard().isPressed(GLFW_KEY_S)) position -= front * (deltaTime * current_sensitivity.z);
-            // Q & E moves the player up and down
-            if(app->getKeyboard().isPressed(GLFW_KEY_Q)) position += up * (deltaTime * current_sensitivity.y);
-            if(app->getKeyboard().isPressed(GLFW_KEY_E)) position -= up * (deltaTime * current_sensitivity.y);
-            // A & D moves the player left or right 
-            if(app->getKeyboard().isPressed(GLFW_KEY_D)) position += right * (deltaTime * current_sensitivity.x);
-            if(app->getKeyboard().isPressed(GLFW_KEY_A)) position -= right * (deltaTime * current_sensitivity.x);
+            if(app->getKeyboard().isPressed(GLFW_KEY_W) && !is_collided) {
+                position += front * (deltaTime * current_sensitivity.z);
+            }
+            // if(app->getKeyboard().isPressed(GLFW_KEY_S)) position += back * (deltaTime * current_sensitivity.z);
+            // // // Q & E moves the player up and down
+            // // if(app->getKeyboard().isPressed(GLFW_KEY_Q)) position += up * (deltaTime * current_sensitivity.y);
+            // // if(app->getKeyboard().isPressed(GLFW_KEY_E)) position -= up * (deltaTime * current_sensitivity.y);
+            // // A & D moves the player left or right 
+            // if(app->getKeyboard().isPressed(GLFW_KEY_D)) position += right * (deltaTime * current_sensitivity.x);
+            // if(app->getKeyboard().isPressed(GLFW_KEY_A)) position += left * (deltaTime * current_sensitivity.x);
             if(app->getKeyboard().isPressed(GLFW_KEY_Z) ) {
                 is_z_clicked = !is_z_clicked;
             }
