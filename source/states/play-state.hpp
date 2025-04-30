@@ -8,7 +8,6 @@
 #include <systems/movement.hpp>
 #include <asset-loader.hpp>
 #include <components/arrow.h>
-
 // This state shows how to use the ECS framework and deserialization.
 class Playstate : public our::State {
     our::World world;
@@ -65,7 +64,26 @@ class Playstate : public our::State {
         auto arrow_config = getApp()->getConfig()["arrow_config"];
 
         // Set transform
-        arrow_entity->localTransform.position = camera_position;
+        // Calculate offset vectors based on camera orientation
+        glm::vec3 front = glm::normalize(camera_front_direction);
+        glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0))); // World up vector is (0,1,0)
+        glm::vec3 up = glm::normalize(glm::cross(right, front));
+
+        // Define offset values (adjust these to match your needs)
+        const float RIGHT_OFFSET = 0.3f;  // Shift right (positive = right)
+        const float UP_OFFSET = -0.1f;    // Slightly downward (negative = down)
+        const float FORWARD_OFFSET = 0.5f; // Shift forward
+
+        // Calculate final spawn position
+        glm::vec3 spawn_position = camera_position
+                                 + right * RIGHT_OFFSET
+                                 + up * UP_OFFSET
+                                 + front * FORWARD_OFFSET;
+
+        // Set transform with offset position
+        arrow_entity->localTransform.position = spawn_position;
+
+        //Set scale
         if (arrow_config.contains("scale")) {
             auto scaleArray = arrow_config["scale"];
             arrow_entity->localTransform.scale = glm::vec3(
@@ -74,6 +92,8 @@ class Playstate : public our::State {
                 scaleArray[2].get<float>()
             );
         }
+
+        // Set rotation
         glm::vec3 dir = glm::normalize(camera_front_direction);
         float yaw = atan2(dir.x, dir.z);
         float roll = -asin(dir.y);

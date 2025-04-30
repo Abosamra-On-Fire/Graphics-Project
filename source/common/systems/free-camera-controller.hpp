@@ -78,7 +78,7 @@ namespace our {
                     rotation.y -= delta.x * controller->rotationSensitivity; // The x-axis controls the yaw
                 }
             }
-        
+
             // We prevent the pitch from exceeding a certain angle from the XZ plane to prevent gimbal locks
             if (rotation.x < -glm::half_pi<float>() * 0.99f) rotation.x = -glm::half_pi<float>() * 0.99f;
             if (rotation.x > glm::half_pi<float>() * 0.99f) rotation.x = glm::half_pi<float>() * 0.99f;
@@ -97,7 +97,8 @@ namespace our {
         
             glm::vec3 front = glm::vec3(matrix * glm::vec4(0, 0, -1, 0)),
                       right = glm::vec3(matrix * glm::vec4(1, 0, 0, 0));
-        
+            this->last_front_direction= front;
+            this->last_camera_position = position;
             // Remove the Y component from front and right vectors to prevent any vertical movement
             front.y = 0.0f;
             front = glm::normalize(front);
