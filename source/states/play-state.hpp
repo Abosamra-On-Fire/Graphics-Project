@@ -68,17 +68,11 @@ class Playstate : public our::State {
         glm::vec3 front = glm::normalize(camera_front_direction);
         glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0, 1, 0))); // World up vector is (0,1,0)
         glm::vec3 up = glm::normalize(glm::cross(right, front));
-
-        // Define offset values (adjust these to match your needs)
-        const float RIGHT_OFFSET = 0.3f;  // Shift right (positive = right)
-        const float UP_OFFSET = -0.1f;    // Slightly downward (negative = down)
-        const float FORWARD_OFFSET = 0.5f; // Shift forward
-
         // Calculate final spawn position
         glm::vec3 spawn_position = camera_position
-                                 + right * RIGHT_OFFSET
-                                 + up * UP_OFFSET
-                                 + front * FORWARD_OFFSET;
+                                 + right * arrow_config["right_offset"].get<float>()
+                                 + up * arrow_config["up_offset"].get<float>()
+                                 + front * arrow_config["forward_offset"].get<float>();
 
         // Set transform with offset position
         arrow_entity->localTransform.position = spawn_position;
