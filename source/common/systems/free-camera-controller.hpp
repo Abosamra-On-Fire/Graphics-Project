@@ -26,7 +26,7 @@ namespace our {
         // When a state enters, it should call this function and give it the pointer to the application
         void enter(Application *app) {
             this->app = app;
-            z_is_clicked = false;
+            is_z_clicked = false;
         }
 
         // This should be called every frame to update all entities containing a FreeCameraControllerComponent 

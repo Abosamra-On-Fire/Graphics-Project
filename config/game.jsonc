@@ -7,7 +7,7 @@
             "width":1280,
             "height":720
         },
-        "fullscreen": true
+        "fullscreen": false
     },
     "scene": {
         "renderer":{
@@ -241,6 +241,7 @@
         "world":[
             {
                 "position": [3, 3, 4.5],
+                "name": "camera",
                 "components": [
                     {
                         "type": "Camera"
@@ -280,6 +281,7 @@
                 "rotation": [0, 45, 0],
                 "position": [-5, 0, -2],
                 "scale": [0.5, 0.5, 0.5],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -292,6 +294,7 @@
                 "rotation": [0, -50, 0],
                 "position": [13, 0, -4],
                 "scale": [0.5, 0.5, 0.5],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -304,6 +307,7 @@
                 "rotation": [0, 0, 0],
                 "position": [3.5, 0, -6.7],
                 "scale": [0.7, 0.7, 0.7],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -316,6 +320,7 @@
                 "position": [0, -4, 0],
                 "rotation": [-90, 0, 90],
                 "scale": [4, 4, 4],
+                "name":"wall",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -328,6 +333,7 @@
                 "position": [13.3, -10, -60],
                 "rotation": [-90, 0, -90],
                 "scale": [10, 10, 10],
+                "name":"wall2",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -400,6 +406,7 @@
                 "rotation": [0, 0, 0],
                 "position": [3.5, 0, -80],
                 "scale": [2, 2, 2],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -412,6 +419,7 @@
                 "rotation": [0, -30, 0],
                 "position": [22, 0, -78],
                 "scale": [1, 1, 1],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -424,6 +432,7 @@
                 "rotation": [0, 30, 0],
                 "position": [-15, 0, -78],
                 "scale": [1, 1, 1],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -436,6 +445,7 @@
                 "rotation": [0, 80, 0],
                 "position": [-20, 0, -65],
                 "scale": [1, 1, 1],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -448,6 +458,7 @@
                 "rotation": [0, -80, 0],
                 "position": [27, 0, -65],
                 "scale": [1, 1, 1],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -460,6 +471,7 @@
                 "rotation": [0, 115, 0],
                 "position": [-17, 0, -50],
                 "scale": [1, 1, 1],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -472,6 +484,7 @@
                 "rotation": [0, -115, 0],
                 "position": [25, 0, -50],
                 "scale": [1, 1, 1],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -484,6 +497,7 @@
                 "position": [2, 15, -14],
                 "rotation": [30, 0, 0],
                 "scale": [7, 7, 7],
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -492,11 +506,35 @@
                     }
                 ]
             }
-            //,
+            ,
             // {
-            //     "position": [0, 1, 2],
-            //     "rotation": [0, 0, 0],
-            //     "scale": [2, 2, 2],
+            //     "position": [30,0, -45],
+            //     "rotation": [0, 60, 0],
+            //     "scale": [4,4,4],
+            //     "components": [
+            //         {
+            //             "type": "Mesh Renderer",
+            //             "mesh": "plane",
+            //             "material": "glass"
+            //         }
+            //     ]
+            // },
+            // {
+            //     "position": [20,0, -45],
+            //     "rotation": [0, 60, 0],
+            //     "scale": [4,4,4],
+            //     "components": [
+            //         {
+            //             "type": "Mesh Renderer",
+            //             "mesh": "plane",
+            //             "material": "glass"
+            //         }
+            //     ]
+            // },
+            // {
+            //     "position": [10,0, -45],
+            //     "rotation": [0, 40, 0],
+            //     "scale": [4,4,4],
             //     "components": [
             //         {
             //             "type": "Mesh Renderer",
@@ -553,7 +591,7 @@
             //         }
             //     ]
             // },
-            ,
+            
             {
                 "position": [0, 10, 0],
                 "rotation": [45, 45, 0],

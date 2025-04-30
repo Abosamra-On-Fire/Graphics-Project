@@ -33,6 +33,8 @@ class Playstate : public our::State {
         // Then we initialize the renderer
         auto size = getApp()->getFrameBufferSize();
         renderer.initialize(size, config["renderer"]);
+
+        collisionSystem.init_collision_wall1(&world);
     }
 
     void onDraw(double deltaTime) override {
