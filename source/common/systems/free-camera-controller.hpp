@@ -11,38 +11,39 @@
 #include <glm/trigonometric.hpp>
 #include <glm/gtx/fast_trigonometry.hpp>
 
-namespace our
-{
-
+namespace our {
     // The free camera controller system is responsible for moving every entity which contains a FreeCameraControllerComponent.
-    // This system is added as a slightly complex example for how use the ECS framework to implement logic. 
+    // This system is added as a slightly complex example for how use the ECS framework to implement logic.
     // For more information, see "common/components/free-camera-controller.hpp"
     class FreeCameraControllerSystem {
-        Application* app; // The application in which the state runs
+        Application *app; // The application in which the state runs
         bool mouse_locked = false; // Is the mouse locked
         bool is_z_clicked=false;
-        bool is_collided=false;
+        bool is_collided=false;      
+        glm::vec3 last_front_direction = {0.0f, 0.0f, -1.0f}; //currently used for arrow
+        glm::vec3 last_camera_position = {0.0f, 0.0f, 0.0f}; //currently used for arrow
     public:
         // When a state enters, it should call this function and give it the pointer to the application
-        void enter(Application* app){
+        void enter(Application *app) {
             this->app = app;
+            z_is_clicked = false;
         }
 
         // This should be called every frame to update all entities containing a FreeCameraControllerComponent 
         void update(World* world, float deltaTime,bool is_collided) {
             // First of all, we search for an entity containing both a CameraComponent and a FreeCameraControllerComponent
             // As soon as we find one, we break
-            CameraComponent* camera = nullptr;
+            CameraComponent *camera = nullptr;
             FreeCameraControllerComponent *controller = nullptr;
-            for(auto entity : world->getEntities()){
+            for (auto entity: world->getEntities()) {
                 camera = entity->getComponent<CameraComponent>();
                 controller = entity->getComponent<FreeCameraControllerComponent>();
-                if(camera && controller) break;
+                if (camera && controller) break;
             }
             // If there is no entity with both a CameraComponent and a FreeCameraControllerComponent, we can do nothing so we return
-            if(!(camera && controller)) return;
+            if (!(camera && controller)) return;
             // Get the entity that we found via getOwner of camera (we could use controller->getOwner())
-            Entity* entity = camera->getOwner();
+            Entity *entity = camera->getOwner();
 
             // If the left mouse button is pressed, we lock and hide the mouse. This common in First Person Games.
             if(!is_z_clicked)
@@ -65,8 +66,8 @@ namespace our
         }
 
             // We get a reference to the entity's position and rotation
-            glm::vec3& position = entity->localTransform.position;
-            glm::vec3& rotation = entity->localTransform.rotation;
+            glm::vec3 &position = entity->localTransform.position;
+            glm::vec3 &rotation = entity->localTransform.rotation;
 
             // If the left mouse button is pressed, we get the change in the mouse location
             // and use it to update the camera rotation
@@ -87,26 +88,31 @@ namespace our
         }
 
             // We prevent the pitch from exceeding a certain angle from the XZ plane to prevent gimbal locks
-            if(rotation.x < -glm::half_pi<float>() * 0.99f) rotation.x = -glm::half_pi<float>() * 0.99f;
-            if(rotation.x >  glm::half_pi<float>() * 0.99f) rotation.x  = glm::half_pi<float>() * 0.99f;
+            if (rotation.x < -glm::half_pi<float>() * 0.99f) rotation.x = -glm::half_pi<float>() * 0.99f;
+            if (rotation.x > glm::half_pi<float>() * 0.99f) rotation.x = glm::half_pi<float>() * 0.99f;
             // This is not necessary, but whenever the rotation goes outside the 0 to 2*PI range, we wrap it back inside.
-            // This could prevent floating point error if the player rotates in single direction for an extremely long time. 
+            // This could prevent floating point error if the player rotates in single direction for an extremely long time.
             rotation.y = glm::wrapAngle(rotation.y);
-
+        
             // We update the camera fov based on the mouse wheel scrolling amount
             float fov = camera->fovY + app->getMouse().getScrollOffset().y * controller->fovSensitivity;
-            fov = glm::clamp(fov, glm::pi<float>() * 0.01f, glm::pi<float>() * 0.99f); // We keep the fov in the range 0.01*PI to 0.99*PI
+            fov = glm::clamp(fov, glm::pi<float>() * 0.01f, glm::pi<float>() * 0.99f);
+            // We keep the fov in the range 0.01*PI to 0.99*PI
             camera->fovY = fov;
-
+        
             // We get the camera model matrix (relative to its parent) to compute the front, up and right directions
             glm::mat4 matrix = entity->localTransform.toMat4();
-
-            glm::vec3 front = glm::vec3(matrix * glm::vec4(0, 0, -1, 0));
-                    //   back= glm::vec3(matrix * glm::vec4(0, 0, 1, 0)),
-                    //   up = glm::vec3(matrix * glm::vec4(0, 1, 0, 0)), 
-                    //   right = glm::vec3(matrix * glm::vec4(1, 0, 0, 0)),
-                    //   left = glm::vec3(matrix * glm::vec4(-1, 0, 0, 0));
-
+        
+            glm::vec3 front = glm::vec3(matrix * glm::vec4(0, 0, -1, 0)),
+                      right = glm::vec3(matrix * glm::vec4(1, 0, 0, 0));
+            this->last_front_direction= front;
+            this->last_camera_position = position;
+            // Remove the Y component from front and right vectors to prevent any vertical movement
+            front.y = 0.0f;
+            front = glm::normalize(front);
+            right.y = 0.0f;
+            right = glm::normalize(right);
+        
             glm::vec3 current_sensitivity = controller->positionSensitivity;
             // If the LEFT SHIFT key is pressed, we multiply the position sensitivity by the speed up factor
             if(app->getKeyboard().isPressed(GLFW_KEY_LEFT_SHIFT)) current_sensitivity *= controller->speedupFactor;
@@ -129,13 +135,18 @@ namespace our
         }
 
         // When the state exits, it should call this function to ensure the mouse is unlocked
-        void exit(){
-            if(mouse_locked) {
+        void exit() {
+            if (mouse_locked) {
                 mouse_locked = false;
                 app->getMouse().unlockMouse(app->getWindow());
             }
         }
 
+        glm::vec3 get_last_camera_postion() {
+            return this->last_camera_position;
+        }
+        glm::vec3 get_last_front_direction() {
+            return this->last_front_direction;
+        }
     };
-
 }
