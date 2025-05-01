@@ -8,12 +8,14 @@
 #include <systems/movement.hpp>
 #include <asset-loader.hpp>
 #include <components/arrow.h>
+#include <systems/arrow-collision-system.h>
 // This state shows how to use the ECS framework and deserialization.
 class Playstate : public our::State {
     our::World world;
     our::ForwardRenderer renderer;
     our::FreeCameraControllerSystem cameraController;
     our::MovementSystem movementSystem;
+    our::ArrowCollisionSystem arrowCollisionSystem;
     void onInitialize() override {
         // First of all, we get the scene configuration from the app config
         auto &config = getApp()->getConfig()["scene"];
@@ -38,7 +40,8 @@ class Playstate : public our::State {
         cameraController.update(&world, (float) deltaTime);
         // And finally we use the renderer system to draw the scene
         renderer.render(&world);
-
+        // We also run the arrow collision system to check for collisions
+        arrowCollisionSystem.update(&world);
         // Get a reference to the keyboard object
         auto &keyboard = getApp()->getKeyboard();
 
@@ -113,6 +116,7 @@ class Playstate : public our::State {
 
         // Add Arrow Component
         arrow_entity->addComponent<our::ArrowComponent>();
+        arrowCollisionSystem.addArrow(arrow_entity);
     }
 
     void onMouseButtonEvent(int button, int action, int mods) override {
