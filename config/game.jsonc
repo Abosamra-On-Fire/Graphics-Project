@@ -261,18 +261,6 @@
                                 "material": "wood"
                             }
                         ]
-                    },
-                    {
-                        "position": [0,0, -1],
-                        // "rotation": [-90, 70, 0],
-                        "scale": [0.02, 0.02, 0.02],
-                        "components": [
-                            {
-                                "type": "Mesh Renderer",
-                                "mesh": "sphere",
-                                "material": "glass"
-                            }
-                        ]
                     }
                 ]
             },
