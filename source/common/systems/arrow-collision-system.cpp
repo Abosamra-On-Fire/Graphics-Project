@@ -6,11 +6,11 @@ glm::vec3 constant_monster_center_correction = {0.1387785, 4.841342, 0.2150395};
 const int ARROW_MAX_LIFETIME_FRAMES= 200;
 namespace our {
     void ArrowCollisionSystem::initialize(World *world) {
-        for (auto entity: world->getEntities()) {
+        for (auto entity: world->getEntities())
             if (entity->name == "monster") {
-                monster_entities.insert(entity);
+                float scale=entity->localTransform.scale.x;
+                if()
             }
-        }
         // std::cout<<"inserted"<<monster_entities.size()<<"monsters"<<std::endl;
         initialized = true;
     }

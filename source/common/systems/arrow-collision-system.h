@@ -7,7 +7,7 @@ namespace our
 {
     class ArrowCollisionSystem
     {
-        std::unordered_set<Entity*> monster_entities;
+        std::unordered_map<Entity*,int> monster_entities;
         std::unordered_map<Entity*,int> arrow_entities;
         bool initialized = false;
     public:
