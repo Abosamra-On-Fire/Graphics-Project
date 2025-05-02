@@ -19,6 +19,7 @@ namespace our
         Entity *player;
         std::vector<glm::vec3> vertices;
         std::vector<glm::vec3> vertices2;
+        std::vector<glm::vec3> vertices3;
     public:
     void init_collision_wall1(World *world) {
         Entity *wall ;
@@ -32,10 +33,15 @@ namespace our
             if (entity->name == "wall2")
             { 
                 wall = entity;
-                vertices2 = loadVerticesInYRange("assets/models/igloo.obj",wall);
+                vertices2 = loadVerticesInYRange("assets/models/ring.obj",wall);
+            }
+            if(entity->name == "hallway")
+            {
+                wall = entity;
+                vertices3 = loadVerticesInYRange("assets/models/hallway.obj",wall);
             }
         }
-        std::cout << "Wall vertices: " << vertices.size() << ", Wall2 vertices: " << vertices2.size() << "\n";
+        std::cout << "Wall vertices: " << vertices.size() << ", Wall2 vertices: " << vertices2.size() << ", Hallway vertices: " << vertices3.size() << "\n";
         
     }
         void setPlayer(Entity *player)
@@ -193,6 +199,36 @@ namespace our
         
             return false; // No collision
         }
+        bool checkWallCollision3(Entity* playerComponent)
+        {
+
+            glm::vec3 playerPos = playerComponent->localTransform.position;
+            glm::vec3 playerForward = glm::normalize(glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0)));
+        
+            float collisionThreshold = 1.5f; // distance threshold
+            float angleThreshold = 0.7f;     // dot product threshold (~60 degrees cone)
+        
+            for (const auto& vertex : vertices3)
+            {
+                glm::vec3 toVertex = vertex - playerPos;
+                float distance = glm::length(toVertex);
+        
+                if (distance <= collisionThreshold)
+                {
+                    // std::cout << distance << std::endl;
+                    glm::vec3 toVertexDir = glm::normalize(toVertex);
+                    float facingDot = glm::dot(playerForward, toVertexDir);
+        
+                    if (facingDot > angleThreshold )
+                    {
+                        
+                        return true; // Collision: close and in front (or behind, if you want both)
+                    }
+                }
+            }
+        
+            return false; // No collision
+        }
         
         int update(World *world, float deltaTime)
         {
@@ -207,15 +243,19 @@ namespace our
             }
             for(const auto &entity : world->getEntities())
             {
-                if ((entity->name == "monster" ) && checkCollision(entity, player))
-                {
-                    return 1;
-                }
+                // if ((entity->name == "monster" ) && checkCollision(entity, player))
+                // {
+                //     return 1;
+                // }
                 if ((entity->name == "wall" ) && checkWallCollision1(player))
                 {
                     return 2;
                 }
                 if ((entity->name == "wall2" ) && checkWallCollision2(player))
+                {
+                    return 2;
+                }
+                if((entity->name == "hallway" ) && checkWallCollision3(player))
                 {
                     return 2;
                 }

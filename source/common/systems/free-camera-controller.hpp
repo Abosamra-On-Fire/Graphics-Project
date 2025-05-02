@@ -22,6 +22,7 @@ namespace our {
         bool is_collided=false;      
         glm::vec3 last_front_direction = {0.0f, 0.0f, -1.0f}; //currently used for arrow
         glm::vec3 last_camera_position = {0.0f, 0.0f, 0.0f}; //currently used for arrow
+
     public:
         // When a state enters, it should call this function and give it the pointer to the application
         void enter(Application *app) {
