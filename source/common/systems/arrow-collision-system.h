@@ -15,5 +15,6 @@ namespace our
         void initialize(World* world);
         float distanceBetweenTwoPoints(glm::vec3 point1, glm::vec3 point2);
         void addArrow(Entity*arrow_entity);
+        bool killedAllMonsters();
     };
 }

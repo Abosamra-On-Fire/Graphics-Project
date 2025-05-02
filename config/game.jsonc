@@ -547,7 +547,7 @@
                 "position": [2, 15, -14],
                 "rotation": [30, 0, 0],
                 "scale": [7, 7, 7],
-                "name":"monster",
+                "name":"plane",
                 "components": [
                     {
                         "type": "Mesh Renderer",
