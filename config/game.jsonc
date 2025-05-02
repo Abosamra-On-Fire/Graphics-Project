@@ -30,6 +30,7 @@
                 "moon": "assets/textures/moon.jpg",
                 "grass": "assets/textures/grass_ground_d.jpg",
                 "ice":"assets/textures/ice_snow.jpg",
+                "air":"assets/textures/air.png",
                 "ice_water1":"assets/textures/ice_water1.jpg",
                 "ice_water2":"assets/textures/ice_water2.jpg",
                 "wood": "assets/textures/wood.jpg",
@@ -46,8 +47,10 @@
                 "plane": "assets/models/plane.obj",
                 "igloo": "assets/models/igloo.obj",
                 "coins": "assets/models/coins.obj",
+                "hallway": "assets/models/hallway.obj",
                 "sphere": "assets/models/sphere.obj",
-                "arrow": "assets/models/arrow_2.obj"
+                "arrow": "assets/models/arrow_2.obj",
+                "ring": "assets/models/ring.obj"
             },
             "samplers":{
                 "default":{},
@@ -102,6 +105,28 @@
                     "transparent": true,
                     "tint": [1, 1, 1, 1],
                     "texture": "glass",
+                    "sampler": "pixelated"
+                },
+                "air":{
+                    "type": "textured",
+                    "shader": "textured",
+                    "pipelineState": {
+                        "faceCulling":{
+                            "enabled": false
+                        },
+                        "depthTesting":{
+                            "enabled": true
+                        },
+                        "blending":{
+                            "enabled": true,
+                            "sourceFactor": "GL_SRC_ALPHA",
+                            "destinationFactor": "GL_ONE_MINUS_SRC_ALPHA"
+                        },
+                        "depthMask": false
+                    },
+                    "transparent": true,
+                    // "tint": [1, 1, 1, 1],
+                    "texture": "air",
                     "sampler": "pixelated"
                 },
                 "wood":{
@@ -315,6 +340,30 @@
                     }
                 ]
             },
+            {// mamar1
+                "position": [0, -4, -8],
+                "rotation": [-90, 0, 90],
+                "scale": [4, 4, 4],
+                "components": [
+                    {
+                        "type": "Mesh Renderer",
+                        "mesh": "hallway",
+                        "material": "ice"
+                    }
+                ]
+            },
+            {// mamar2
+                "position": [0, -4, -16],
+                "rotation": [-90, 0, 90],
+                "scale": [4, 4, 4],
+                "components": [
+                    {
+                        "type": "Mesh Renderer",
+                        "mesh": "hallway",
+                        "material": "ice"
+                    }
+                ]
+            },
             {/////////////////////////second room
                 "position": [13.3, -10, -60],
                 "rotation": [-90, 0, -90],
@@ -324,6 +373,18 @@
                         "type": "Mesh Renderer",
                         "mesh": "igloo",
                         "material": "ice"
+                    }
+                ]
+            },
+            {
+                "position": [5, 2, -63],
+                "rotation": [0, 180, 0],
+                "scale": [12, 4, 14],
+                "components": [
+                    {
+                        "type": "Mesh Renderer",
+                        "mesh": "ring",
+                        "material": "gold"
                     }
                 ]
             },
