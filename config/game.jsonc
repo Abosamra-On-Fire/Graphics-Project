@@ -36,12 +36,14 @@
                 "wood": "assets/textures/wood.jpg",
                 "glass": "assets/textures/glass-panels.png",
                 "monkey": "assets/textures/monkey.png",
+                "egg": "assets/textures/egg.jpg",
                 "gold": "assets/textures/gold.jpg",
                 "monster": "assets/textures/ice_snow.jpg"
             },
             "meshes":{
                 "cube": "assets/models/cube.obj",
                 "monkey": "assets/models/monkey.obj",
+                "egg": "assets/models/egg.obj",
                 "crossbow": "assets/models/crossbow.obj",
                 "monster": "assets/models/monster.obj",
                 "plane": "assets/models/plane.obj",
@@ -219,6 +221,21 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "monkey",
+                    "sampler": "default"
+                },
+                "egg":{
+                    "type": "textured",
+                    "shader": "textured",
+                    "pipelineState": {
+                        "faceCulling":{
+                            "enabled": false
+                        },
+                        "depthTesting":{
+                            "enabled": true
+                        }
+                    },
+                    "tint": [1, 1, 1, 1],
+                    "texture": "egg",
                     "sampler": "default"
                 },
                 "monster":{
@@ -613,19 +630,35 @@
             //     ]
             // },
             ,
+            // {
+            //     "position": [0, 10, 0],
+            //     "rotation": [45, 45, 0],
+            //     "scale": [5, 5, 5],
+            //     "components": [
+            //         {
+            //             "type": "Mesh Renderer",
+            //             "mesh": "sphere",
+            //             "material": "moon"
+            //         },
+            //         {
+            //             "type": "Movement",
+            //             "linearVelocity": [0, 1, 0],
+            //             "angularVelocity": [0, 90, 0]
+                        
+            //         }
+            //     ]
+            // },
             {
-                "position": [0, 10, 0],
+                "position": [0, 25, 0],
                 "rotation": [45, 45, 0],
-                "scale": [5, 5, 5],
                 "components": [
                     {
                         "type": "Mesh Renderer",
-                        "mesh": "sphere",
-                        "material": "moon"
+                        "mesh": "egg",
+                        "material": "egg"
                     },
                     {
                         "type": "Movement",
-                        "linearVelocity": [0, 1, 0],
                         "angularVelocity": [0, 90, 0]
                         
                     }
