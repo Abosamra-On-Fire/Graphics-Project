@@ -9,10 +9,9 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp> // For distance squared
-
-class Playstate: public our::State {
 #include <components/arrow.h>
 #include <systems/arrow-collision-system.h>
+
 // This state shows how to use the ECS framework and deserialization.
 class Playstate : public our::State {
     our::World world;
@@ -23,7 +22,7 @@ class Playstate : public our::State {
     our::Mesh *timerRectangle;
     our::TexturedMaterial *crosshairMat;
     our::Mesh *crosshairMesh;
-    
+    our::ArrowCollisionSystem arrowCollisionSystem;
     // Timer variables
     float timeRemaining;
     float totalTime;
@@ -32,19 +31,19 @@ class Playstate : public our::State {
     // Win position and threshold
     glm::vec3 winPosition = glm::vec3(0.0f, 1.0f, -85.0f);
     float winDistanceThreshold = 5.0f; // Distance threshold for winning
-    our::ArrowCollisionSystem arrowCollisionSystem;
+
     void onInitialize() override {
         // Timer initialization (your existing code)
         timerRectangle = new our::Mesh({
-            {{0.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-            {{1.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-            {{1.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-            {{0.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-        }, {
-            0, 1, 2,
-            2, 3, 0
-        });
-    
+                                           {{0.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+                                           {{1.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+                                           {{1.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+                                           {{0.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+                                       }, {
+                                           0, 1, 2,
+                                           2, 3, 0
+                                       });
+
         Timemat = new our::TexturedMaterial();
         Timemat->shader = new our::ShaderProgram();
         Timemat->shader->attach("assets/shaders/textured.vert", GL_VERTEX_SHADER);
@@ -55,14 +54,14 @@ class Playstate : public our::State {
 
         // Crosshair initialization
         crosshairMesh = new our::Mesh({
-            {{0.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-            {{1.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-            {{1.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-            {{0.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-        }, {
-            0, 1, 2,
-            2, 3, 0
-        });
+                                          {{0.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+                                          {{1.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+                                          {{1.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+                                          {{0.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+                                      }, {
+                                          0, 1, 2,
+                                          2, 3, 0
+                                      });
 
         crosshairMat = new our::TexturedMaterial();
         crosshairMat->shader = new our::ShaderProgram();
@@ -74,14 +73,14 @@ class Playstate : public our::State {
 
         // Rest of your initialization code...
         auto &config = getApp()->getConfig()["scene"];
-        
-        if(config.contains("time-limit")) {
+
+        if (config.contains("time-limit")) {
             totalTime = config["time-limit"];
         } else {
-            totalTime = 20.0f;
+            totalTime = 2000;
         }
         timeRemaining = totalTime;
-        
+
         if (config.contains("assets")) {
             our::deserializeAllAssets(config["assets"]);
         }
@@ -96,56 +95,56 @@ class Playstate : public our::State {
     void drawCrosshair() {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+
         glm::ivec2 size = getApp()->getFrameBufferSize();
         glViewport(0, 0, size.x, size.y);
-        
-        glm::mat4 projection = glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f, -1.0f, 1.0f);
-        
+
+        glm::mat4 projection = glm::ortho(0.0f, (float) size.x, (float) size.y, 0.0f, -1.0f, 1.0f);
+
         // Crosshair size (assuming it's a square)
         float crosshairSize = 32.0f; // Adjust as needed
-        
+
         // Center the crosshair
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3((size.x - crosshairSize)/2.0f, 
-                                              (size.y - crosshairSize)/2.0f, 
-                                              0.0f));
+        model = glm::translate(model, glm::vec3((size.x - crosshairSize) / 2.0f,
+                                                (size.y - crosshairSize) / 2.0f,
+                                                0.0f));
         model = glm::scale(model, glm::vec3(crosshairSize, crosshairSize, 1.0f));
-        
+
         crosshairMat->setup();
         crosshairMat->shader->set("transform", projection * model);
         crosshairMesh->draw();
-        
+
         glDisable(GL_BLEND);
     }
 
     void timerDraw(float timeRemaining) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+
         glm::ivec2 size = getApp()->getFrameBufferSize();
         glViewport(0, 0, size.x, size.y);
-        
-        glm::mat4 projection = glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f, -1.0f, 1.0f);
-        
+
+        glm::mat4 projection = glm::ortho(0.0f, (float) size.x, (float) size.y, 0.0f, -1.0f, 1.0f);
+
         float timerWidth = 324.0f;
         float timerHeight = 120.0f;
         float margin = 30.0f;
-        
+
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(size.x - (timerWidth +size.x)/2, margin, 0.0f));
+        model = glm::translate(model, glm::vec3(size.x - (timerWidth + size.x) / 2, margin, 0.0f));
         model = glm::scale(model, glm::vec3(timerWidth, timerHeight, 1.0f));
-        
+
         float timeRatio = timeRemaining / totalTime;
         Timemat->tint = glm::vec4(1.0f, timeRatio, timeRatio, 1.0f);
-        
+
         Timemat->setup();
         Timemat->shader->set("transform", projection * model);
         timerRectangle->draw();
-        
+
         glDisable(GL_BLEND);
     }
-    
+
     void onDraw(double deltaTime) override {
         movementSystem.update(&world, (float) deltaTime);
         cameraController.update(&world, (float) deltaTime);
@@ -155,19 +154,19 @@ class Playstate : public our::State {
         // Draw HUD elements
         timerDraw(timeRemaining);
         drawCrosshair();
-    
+
         // Search for the camera entity by component
         bool cameraFound = false;
-        for (auto entity : world.getEntities()) {
+        for (auto entity: world.getEntities()) {
             // Check if the entity has a CameraComponent
             if (entity->getComponent<our::CameraComponent>()) {
                 glm::vec3 cameraPosition = entity->localTransform.position;
-                std::cerr << "Camera position: ("
-                          << cameraPosition.x << ", "
-                          << cameraPosition.y << ", "
-                          << cameraPosition.z << ")" << std::endl;
+                // std::cerr << "Camera position: ("
+                //         << cameraPosition.x << ", "
+                //         << cameraPosition.y << ", "
+                //         << cameraPosition.z << ")" << std::endl;
                 cameraFound = true;
-    
+
                 // Check win condition
                 float distance = glm::distance(cameraPosition, winPosition);
                 if (distance < winDistanceThreshold) {
@@ -178,19 +177,19 @@ class Playstate : public our::State {
                 break; // Exit loop after finding the first camera
             }
         }
-    
+
         if (!cameraFound) {
             std::cerr << "WARNING: No camera entity found (missing CameraComponent)!" << std::endl;
         }
-    
+
         // Timer and escape key logic...
-        timeRemaining -= (float)deltaTime;
+        timeRemaining -= (float) deltaTime;
         if (timeRemaining <= 0) {
             getApp()->changeState("lose");
         }
-    
+
         auto &keyboard = getApp()->getKeyboard();
-        if  (keyboard.justPressed(GLFW_KEY_ESCAPE))  {
+        if (keyboard.justPressed(GLFW_KEY_ESCAPE)) {
             getApp()->changeState("menu");
         }
     }
@@ -199,17 +198,17 @@ class Playstate : public our::State {
         renderer.destroy();
         cameraController.exit();
         world.clear();
-        
+
         // Clean up crosshair resources
         delete crosshairMat->shader;
         delete crosshairMat;
         delete crosshairMesh;
-        
+
         // Clean up timer resources
         delete Timemat->shader;
         delete Timemat;
         delete timerRectangle;
-        
+
         our::clearAllAssets();
     }
 
@@ -224,9 +223,9 @@ class Playstate : public our::State {
         glm::vec3 up = glm::normalize(glm::cross(right, front));
         // Calculate final spawn position
         glm::vec3 spawn_position = camera_position
-                                 + right * arrow_config["right_offset"].get<float>()
-                                 + up * arrow_config["up_offset"].get<float>()
-                                 + front * arrow_config["forward_offset"].get<float>();
+                                   + right * arrow_config["right_offset"].get<float>()
+                                   + up * arrow_config["up_offset"].get<float>()
+                                   + front * arrow_config["forward_offset"].get<float>();
 
         // Set transform with offset position
         arrow_entity->localTransform.position = spawn_position;

@@ -8,8 +8,7 @@ namespace our {
     void ArrowCollisionSystem::initialize(World *world) {
         for (auto entity: world->getEntities())
             if (entity->name == "monster") {
-                float scale=entity->localTransform.scale.x;
-                if()
+                monster_entities.insert({entity,0});
             }
         // std::cout<<"inserted"<<monster_entities.size()<<"monsters"<<std::endl;
         initialized = true;
@@ -39,10 +38,10 @@ namespace our {
             for (auto&monster_entity : monster_entities) {
                 float distance = distanceBetweenTwoPoints(
                     arrow_entity.first->localTransform.position,
-                    monster_entity->localTransform.position + constant_monster_center_correction
+                    monster_entity.first->localTransform.position + constant_monster_center_correction
                 );
 
-                if (distance < 6.75f * monster_entity->localTransform.scale.x) {
+                if (distance < 6.75f * monster_entity.first->localTransform.scale.x) {
                     arrows_to_remove.push_back(arrow_entity.first);
                     hit=true;
                     break;
