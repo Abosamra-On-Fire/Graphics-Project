@@ -197,7 +197,12 @@ namespace our
         for (auto &command : opaqueCommands)
         {
             command.material->setup();
-            command.material->shader->set("transform", VP * command.localToWorld);
+            command.material->shader->set("transform", VP );
+            glm::mat3 matrix=glm::mat3(transpose(inverse(command.localToWorld)));
+            command.material->shader->set("modelInverseTranspose", matrix);
+            command.material->shader->set("model", command.localToWorld);
+            glm::vec3 camera_position = glm::vec3(camera->getOwner()->getLocalToWorldMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            command.material->shader->set("camera_position", camera_position);
             command.mesh->draw();
         }
         // If there is a sky material, draw the sky

@@ -24,6 +24,10 @@
                 "textured":{
                     "vs":"assets/shaders/textured.vert",
                     "fs":"assets/shaders/textured.frag"
+                },
+                "lit":{
+                    "vs":"assets/shaders/lighted.vert",
+                    "fs":"assets/shaders/lighted.frag"
                 }
             },
             "textures":{
@@ -61,7 +65,7 @@
             "materials":{
                 "metal":{
                     "type": "tinted",
-                    "shader": "tinted",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -87,7 +91,7 @@
                 // },
                 "glass":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -109,7 +113,7 @@
                 },
                 "air":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -131,7 +135,7 @@
                 },
                 "wood":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -147,7 +151,7 @@
                 },
                 "gold":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -163,7 +167,7 @@
                 },
                 "grass":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -178,7 +182,7 @@
                 },
                 "ice":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -193,7 +197,7 @@
                 },
                 "ice_water1":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -223,7 +227,7 @@
                 },
                 "monster":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -238,7 +242,7 @@
                 },
                 "moon":{
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -253,7 +257,7 @@
                 },
                 "arrow_material": {
                     "type": "textured",
-                    "shader": "textured",
+                    "shader": "lit",
                     "pipelineState": {
                         "depthTesting": { "enabled": true }
                     },
