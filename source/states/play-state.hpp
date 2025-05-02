@@ -1,63 +1,210 @@
 #pragma once
 
 #include <application.hpp>
-
 #include <ecs/world.hpp>
 #include <systems/forward-renderer.hpp>
 #include <systems/free-camera-controller.hpp>
 #include <systems/movement.hpp>
 #include <asset-loader.hpp>
+#include <string>
+#include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp> // For distance squared
 
-// This state shows how to use the ECS framework and deserialization.
 class Playstate: public our::State {
-
     our::World world;
     our::ForwardRenderer renderer;
     our::FreeCameraControllerSystem cameraController;
     our::MovementSystem movementSystem;
+    our::TexturedMaterial *Timemat;
+    our::Mesh *timerRectangle;
+    our::TexturedMaterial *crosshairMat;
+    our::Mesh *crosshairMesh;
+    
+    // Timer variables
+    float timeRemaining;
+    float totalTime;
+    float printTimer = 0.0f;
+
+    // Win position and threshold
+    glm::vec3 winPosition = glm::vec3(0.0f, 1.0f, -85.0f);
+    float winDistanceThreshold = 5.0f; // Distance threshold for winning
 
     void onInitialize() override {
-        // First of all, we get the scene configuration from the app config
+        // Timer initialization (your existing code)
+        timerRectangle = new our::Mesh({
+            {{0.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+            {{1.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+            {{1.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+            {{0.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        }, {
+            0, 1, 2,
+            2, 3, 0
+        });
+    
+        Timemat = new our::TexturedMaterial();
+        Timemat->shader = new our::ShaderProgram();
+        Timemat->shader->attach("assets/shaders/textured.vert", GL_VERTEX_SHADER);
+        Timemat->shader->attach("assets/shaders/textured.frag", GL_FRAGMENT_SHADER);
+        Timemat->shader->link();
+        Timemat->texture = our::texture_utils::loadImage("assets/textures/timer.png");
+        Timemat->tint = glm::vec4(1.0f);
+
+        // Crosshair initialization
+        crosshairMesh = new our::Mesh({
+            {{0.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+            {{1.0f, 0.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+            {{1.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+            {{0.0f, 1.0f, 0.0f}, {255, 255, 255, 255}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        }, {
+            0, 1, 2,
+            2, 3, 0
+        });
+
+        crosshairMat = new our::TexturedMaterial();
+        crosshairMat->shader = new our::ShaderProgram();
+        crosshairMat->shader->attach("assets/shaders/textured.vert", GL_VERTEX_SHADER);
+        crosshairMat->shader->attach("assets/shaders/textured.frag", GL_FRAGMENT_SHADER);
+        crosshairMat->shader->link();
+        crosshairMat->texture = our::texture_utils::loadImage("assets/textures/crosshair.png");
+        crosshairMat->tint = glm::vec4(1.0f);
+
+        // Rest of your initialization code...
         auto& config = getApp()->getConfig()["scene"];
-        // If we have assets in the scene config, we deserialize them
+        
+        if(config.contains("time-limit")) {
+            totalTime = config["time-limit"];
+        } else {
+            totalTime = 20.0f;
+        }
+        timeRemaining = totalTime;
+        
         if(config.contains("assets")){
             our::deserializeAllAssets(config["assets"]);
         }
-        // If we have a world in the scene config, we use it to populate our world
         if(config.contains("world")){
             world.deserialize(config["world"]);
         }
-        // We initialize the camera controller system since it needs a pointer to the app
         cameraController.enter(getApp());
-        // Then we initialize the renderer
         auto size = getApp()->getFrameBufferSize();
         renderer.initialize(size, config["renderer"]);
     }
 
+    void drawCrosshair() {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        glm::ivec2 size = getApp()->getFrameBufferSize();
+        glViewport(0, 0, size.x, size.y);
+        
+        glm::mat4 projection = glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f, -1.0f, 1.0f);
+        
+        // Crosshair size (assuming it's a square)
+        float crosshairSize = 32.0f; // Adjust as needed
+        
+        // Center the crosshair
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3((size.x - crosshairSize)/2.0f, 
+                                              (size.y - crosshairSize)/2.0f, 
+                                              0.0f));
+        model = glm::scale(model, glm::vec3(crosshairSize, crosshairSize, 1.0f));
+        
+        crosshairMat->setup();
+        crosshairMat->shader->set("transform", projection * model);
+        crosshairMesh->draw();
+        
+        glDisable(GL_BLEND);
+    }
+
+    void timerDraw(float timeRemaining) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        glm::ivec2 size = getApp()->getFrameBufferSize();
+        glViewport(0, 0, size.x, size.y);
+        
+        glm::mat4 projection = glm::ortho(0.0f, (float)size.x, (float)size.y, 0.0f, -1.0f, 1.0f);
+        
+        float timerWidth = 324.0f;
+        float timerHeight = 120.0f;
+        float margin = 30.0f;
+        
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(size.x - (timerWidth +size.x)/2, margin, 0.0f));
+        model = glm::scale(model, glm::vec3(timerWidth, timerHeight, 1.0f));
+        
+        float timeRatio = timeRemaining / totalTime;
+        Timemat->tint = glm::vec4(1.0f, timeRatio, timeRatio, 1.0f);
+        
+        Timemat->setup();
+        Timemat->shader->set("transform", projection * model);
+        timerRectangle->draw();
+        
+        glDisable(GL_BLEND);
+    }
+    
     void onDraw(double deltaTime) override {
-        // Here, we just run a bunch of systems to control the world logic
         movementSystem.update(&world, (float)deltaTime);
         cameraController.update(&world, (float)deltaTime);
-        // And finally we use the renderer system to draw the scene
         renderer.render(&world);
 
-        // Get a reference to the keyboard object
+        // Draw HUD elements
+        timerDraw(timeRemaining);
+        drawCrosshair();
+    
+        // Search for the camera entity by component
+        bool cameraFound = false;
+        for (auto entity : world.getEntities()) {
+            // Check if the entity has a CameraComponent
+            if (entity->getComponent<our::CameraComponent>()) {
+                glm::vec3 cameraPosition = entity->localTransform.position;
+                std::cerr << "Camera position: ("
+                          << cameraPosition.x << ", "
+                          << cameraPosition.y << ", "
+                          << cameraPosition.z << ")" << std::endl;
+                cameraFound = true;
+    
+                // Check win condition
+                float distance = glm::distance(cameraPosition, winPosition);
+                if (distance < winDistanceThreshold) {
+                    std::cerr << "WIN! Distance to target: " << distance << std::endl;
+                    getApp()->changeState("win");
+                    return;
+                }
+                break; // Exit loop after finding the first camera
+            }
+        }
+    
+        if (!cameraFound) {
+            std::cerr << "WARNING: No camera entity found (missing CameraComponent)!" << std::endl;
+        }
+    
+        // Timer and escape key logic...
+        timeRemaining -= (float)deltaTime;
+        if (timeRemaining <= 0) {
+            getApp()->changeState("lose");
+        }
+    
         auto& keyboard = getApp()->getKeyboard();
-
-        if(keyboard.justPressed(GLFW_KEY_ESCAPE)){
-            // If the escape  key is pressed in this frame, go to the play state
+        if (keyboard.justPressed(GLFW_KEY_ESCAPE)) {
             getApp()->changeState("menu");
         }
     }
 
     void onDestroy() override {
-        // Don't forget to destroy the renderer
         renderer.destroy();
-        // On exit, we call exit for the camera controller system to make sure that the mouse is unlocked
         cameraController.exit();
-        // Clear the world
         world.clear();
-        // and we delete all the loaded assets to free memory on the RAM and the VRAM
+        
+        // Clean up crosshair resources
+        delete crosshairMat->shader;
+        delete crosshairMat;
+        delete crosshairMesh;
+        
+        // Clean up timer resources
+        delete Timemat->shader;
+        delete Timemat;
+        delete timerRectangle;
+        
         our::clearAllAssets();
     }
 };
