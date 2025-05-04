@@ -206,8 +206,12 @@ class Playstate : public our::State {
     void onDraw(double deltaTime) override {
         // Here, we just run a bunch of systems to control the world logic
         movementSystem.update(&world, (float)deltaTime);
-        bool is_collidied=collisionSystem.update(&world, (float)deltaTime);
-        cameraController.update(&world, (float)deltaTime,is_collidied);
+        int  collision_val=collisionSystem.update(&world, (float)deltaTime);
+        bool is_collidied_forword=(collision_val==2);
+        bool is_collidied_backword=(collision_val==3);
+        bool is_collidied_right=(collision_val==4);
+        bool is_collidied_left=(collision_val==5);
+        cameraController.update(&world, (float)deltaTime,is_collidied_forword,is_collidied_backword,is_collidied_right,is_collidied_left);
         auto& keyboard = getApp()->getKeyboard();
 
 

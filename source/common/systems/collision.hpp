@@ -110,42 +110,64 @@ namespace our
         //     // Require the object to be mostly in front (adjust threshold as needed)
         //     return angleDot > 0.7f; // ~45-degree cone
         // }
-        bool checkCollision(Entity* objectComponent, Entity* playerComponent) 
+        int checkCollision(Entity* objectComponent, Entity* playerComponent) 
         {
-            // Get positions
+            std::cout<<"Collision check\n";
             glm::vec3 playerPos = playerComponent->localTransform.position;
             glm::vec3 objectPos = objectComponent->localTransform.position;
-            objectPos.y +=3.0f; // Ignore vertical position
-            // Calculate distance between player and object
+            objectPos.y += 3.0f; // Ignore vertical component
+        
             glm::vec3 toObject = objectPos - playerPos;
             float distance = glm::distance(playerPos, objectPos);
-            
-            // Define collision threshold (sum of player and object radii)
-            float collisionThreshold = 1.5f; // Adjust based on your object sizes
-            
+        
+            float collisionThreshold = 1.5f;
+        
             if (distance > collisionThreshold)
                 return false;
             
-            // For more accurate collision, you might want to:
-            // 1. Use bounding boxes/spheres
-            // 2. Consider object orientation and size
-            
-            // If you specifically want to check if player is facing the object:
-            glm::vec3 playerForward = glm::normalize(playerComponent->getLocalToWorldMatrix()* glm::vec4(0, 0, -1, 0)); // You need to implement this
+            toObject.y = 0.0f;
             glm::vec3 toObjectDir = glm::normalize(toObject);
+        
+            // Get direction vectors
+            glm::vec3 playerForward3D = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0));
+            glm::vec3 playerRight3D   = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(1, 0, 0, 0));
             
-            float facingDot = glm::dot(playerForward, toObjectDir);
+            // Project onto XZ plane (ignore Y)
+            playerForward3D.y = 0.0f;
+            playerRight3D.y = 0.0f;
             
-            // Only consider it a collision if player is close AND facing the object
-            // Adjust threshold (0.7f means ~45 degree cone in front of player)
-            return facingDot > 0.5f||facingDot < -0.5f; 
+            glm::vec3 playerForward = glm::normalize(playerForward3D);
+            glm::vec3 playerRight   = glm::normalize(playerRight3D);
+            
+            float dotForward = glm::dot(playerForward, toObjectDir);
+            float dotRight = glm::dot(playerRight, toObjectDir);
+        
+            // Forward
+            if (dotForward > 0.7f) return 2;
+            // Backward
+            else if (dotForward < -0.7f) return 3;
+            // Right
+            else if (dotRight > 0.7f) return 4;
+            // Left
+            else if (dotRight < -0.7f) return 5;
+        
+            return 0;
         }
+        
 
-        bool checkWallCollision1(Entity* playerComponent)
+        int checkWallCollision1(Entity* playerComponent)
         {
             glm::vec3 playerPos = playerComponent->localTransform.position;
-            glm::vec3 playerForward = glm::normalize(glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0)));
-        
+            glm::vec3 playerForward3D = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0));
+            glm::vec3 playerRight3D   = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(1, 0, 0, 0));
+            
+            // Project onto XZ plane (ignore Y)
+            playerForward3D.y = 0.0f;
+            playerRight3D.y = 0.0f;
+            
+            glm::vec3 playerForward = glm::normalize(playerForward3D);
+            glm::vec3 playerRight   = glm::normalize(playerRight3D);
+            
             float collisionThreshold = 1.5f; // distance threshold
             float angleThreshold = 0.7f;     // dot product threshold (~60 degrees cone)
         
@@ -156,31 +178,54 @@ namespace our
         
                 if (distance <= collisionThreshold)
                 {
+                    toVertex.y = 0.0f;
                     glm::vec3 toVertexDir = glm::normalize(toVertex);
                     float facingDot = glm::dot(playerForward, toVertexDir);
-        
+                    float dotRight = glm::dot(playerRight, toVertexDir);
                     if (facingDot > angleThreshold )
                     {
-                        return true; // Collision: close and in front (or behind, if you want both)
+                        return 2; 
                     }
+                    else if(facingDot< -angleThreshold)
+                    {
+                        return 3;
+                    }
+                    else if(dotRight > angleThreshold)
+                    {
+                        return 4;
+                    }
+                    else if(dotRight < -angleThreshold)
+                    {
+                        return 5;
+                    }
+
                 }
             }
         
-            return false; // No collision
+            return 0; // No collision
         }
         
-        bool checkWallCollision2(Entity* playerComponent)
+        int checkWallCollision2(Entity* playerComponent)
         {
 
             glm::vec3 playerPos = playerComponent->localTransform.position;
-            glm::vec3 playerForward = glm::normalize(glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0)));
-        
+            glm::vec3 playerForward3D = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0));
+            glm::vec3 playerRight3D   = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(1, 0, 0, 0));
+
+            // Project onto XZ plane (ignore Y)
+            playerForward3D.y = 0.0f;
+            playerRight3D.y = 0.0f;
+
+            glm::vec3 playerForward = glm::normalize(playerForward3D);
+            glm::vec3 playerRight   = glm::normalize(playerRight3D);
+
             float collisionThreshold = 1.5f; // distance threshold
-            float angleThreshold = 0.7f;     // dot product threshold (~60 degrees cone)
+            float angleThreshold = 0.7f;     
         
             for (const auto& vertex : vertices2)
             {
                 glm::vec3 toVertex = vertex - playerPos;
+                toVertex.y = 0.0f;
                 float distance = glm::length(toVertex);
         
                 if (distance <= collisionThreshold)
@@ -188,29 +233,51 @@ namespace our
                     // std::cout << distance << std::endl;
                     glm::vec3 toVertexDir = glm::normalize(toVertex);
                     float facingDot = glm::dot(playerForward, toVertexDir);
-        
+                    float dotRight = glm::dot(playerRight, toVertexDir);
                     if (facingDot > angleThreshold )
                     {
                         
-                        return true; // Collision: close and in front (or behind, if you want both)
+                        return 2; // Collision: close and in front (or behind, if you want both)
                     }
+                    else if(facingDot< -angleThreshold)
+                    {
+                        return 3;
+                    }
+                    else if(dotRight > angleThreshold)
+                    {
+                        return 4;
+                    }
+                    else if(dotRight < -angleThreshold)
+                    {
+                        return 5;
+                    }
+
                 }
             }
         
             return false; // No collision
         }
-        bool checkWallCollision3(Entity* playerComponent)
+        int checkWallCollision3(Entity* playerComponent)
         {
 
             glm::vec3 playerPos = playerComponent->localTransform.position;
-            glm::vec3 playerForward = glm::normalize(glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0)));
-        
-            float collisionThreshold = 1.5f; // distance threshold
+            glm::vec3 playerForward3D = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0));
+            glm::vec3 playerRight3D   = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(1, 0, 0, 0));
+            
+            // Project onto XZ plane (ignore Y)
+            playerForward3D.y = 0.0f;
+            playerRight3D.y = 0.0f;
+            
+            glm::vec3 playerForward = glm::normalize(playerForward3D);
+            glm::vec3 playerRight   = glm::normalize(playerRight3D);
+            
+            float collisionThreshold = 1.0f; // distance threshold
             float angleThreshold = 0.7f;     // dot product threshold (~60 degrees cone)
         
             for (const auto& vertex : vertices3)
             {
                 glm::vec3 toVertex = vertex - playerPos;
+                toVertex.y = 0.0f;
                 float distance = glm::length(toVertex);
         
                 if (distance <= collisionThreshold)
@@ -218,11 +285,23 @@ namespace our
                     // std::cout << distance << std::endl;
                     glm::vec3 toVertexDir = glm::normalize(toVertex);
                     float facingDot = glm::dot(playerForward, toVertexDir);
-        
+                    float dotRight = glm::dot(playerRight, toVertexDir);
                     if (facingDot > angleThreshold )
                     {
                         
-                        return true; // Collision: close and in front (or behind, if you want both)
+                        return 2; 
+                    }
+                    else if(facingDot< -angleThreshold)
+                    {
+                        return 3;
+                    }
+                    else if(dotRight > angleThreshold)
+                    {
+                        return 4;
+                    }
+                    else if(dotRight < -angleThreshold)
+                    {
+                        return 5;
                     }
                 }
             }
@@ -243,21 +322,69 @@ namespace our
             }
             for(const auto &entity : world->getEntities())
             {
-                // if ((entity->name == "monster" ) && checkCollision(entity, player))
-                // {
-                //     return 1;
-                // }
-                if ((entity->name == "wall" ) && checkWallCollision1(player))
+                if ((entity->name == "monster" ) && checkCollision(entity, player)==2)
                 {
                     return 2;
                 }
-                if ((entity->name == "wall2" ) && checkWallCollision2(player))
+                else if((entity->name == "monster" ) && checkCollision(entity, player)==3)
+                {
+                    return 3;
+                }
+                else if((entity->name == "monster" ) && checkCollision(entity, player)==4)
+                {
+                    return 4;
+                }
+                else if((entity->name == "monster" ) && checkCollision(entity, player)==5)
+                {
+                    return 5;
+                }   
+                if ((entity->name == "wall" ) && checkWallCollision1(player)==2)
                 {
                     return 2;
                 }
-                if((entity->name == "hallway" ) && checkWallCollision3(player))
+                else if((entity->name == "wall" ) && checkWallCollision1(player)==3)
+                {
+                    return 3;
+                }
+                else if((entity->name == "wall" ) && checkWallCollision1(player)==4)
+                {
+                    return 4;
+                }
+                else if((entity->name == "wall" ) && checkWallCollision1(player)==5)
+                {
+                    return 5;
+                }
+                if ((entity->name == "wall2" ) && checkWallCollision2(player)==2)
                 {
                     return 2;
+                }
+                else if((entity->name == "wall2" ) && checkWallCollision2(player)==3)
+                {
+                    return 3;
+                }
+                else if((entity->name == "wall2" ) && checkWallCollision2(player)==4)
+                {
+                    return 4;
+                }
+                else if((entity->name == "wall2" ) && checkWallCollision2(player)==5)
+                {
+                    return 5;
+                }
+                if((entity->name == "hallway" ) && checkWallCollision3(player)==2)
+                {
+                    return 2;
+                }
+                else if((entity->name == "hallway" ) && checkWallCollision3(player)==3)
+                {
+                    return 3;
+                }
+                else if((entity->name == "hallway" ) && checkWallCollision3(player)==4)
+                {
+                    return 4;
+                }
+                else if((entity->name == "hallway" ) && checkWallCollision3(player)==5)
+                {
+                    return 5;
                 }
             }
             return 0;

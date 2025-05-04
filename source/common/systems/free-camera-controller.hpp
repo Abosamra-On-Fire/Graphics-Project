@@ -19,7 +19,10 @@ namespace our {
         Application *app; // The application in which the state runs
         bool mouse_locked = false; // Is the mouse locked
         bool is_z_clicked=false;
-        bool is_collided=false;      
+        // bool is_collided_forward=false;  
+        // bool is_collided_backword=false;
+        // bool is_collided_right=false;  
+        // bool is_collided_left=false;    
         glm::vec3 last_front_direction = {0.0f, 0.0f, -1.0f}; //currently used for arrow
         glm::vec3 last_camera_position = {0.0f, 0.0f, 0.0f}; //currently used for arrow
 
@@ -31,7 +34,7 @@ namespace our {
         }
 
         // This should be called every frame to update all entities containing a FreeCameraControllerComponent 
-        void update(World* world, float deltaTime,bool is_collided) {
+        void update(World* world, float deltaTime,bool is_collided_forward,bool is_collided_backword,bool is_collided_right,bool is_collided_left) {
             // First of all, we search for an entity containing both a CameraComponent and a FreeCameraControllerComponent
             // As soon as we find one, we break
             CameraComponent *camera = nullptr;
@@ -120,8 +123,17 @@ namespace our {
 
             // We change the camera position based on the keys WASD/QE
             // S & W moves the player back and forth
-            if(app->getKeyboard().isPressed(GLFW_KEY_W) && !is_collided) {
+            if(app->getKeyboard().isPressed(GLFW_KEY_W) && !is_collided_forward) {
                 position += front * (deltaTime * current_sensitivity.z);
+            }
+            if(app->getKeyboard().isPressed(GLFW_KEY_S) && !is_collided_backword) {
+                position -= front * (deltaTime * current_sensitivity.z);
+            }
+            if(app->getKeyboard().isPressed(GLFW_KEY_D) && !is_collided_right) {
+                position += right * (deltaTime * current_sensitivity.x);
+            }
+            if(app->getKeyboard().isPressed(GLFW_KEY_A) && !is_collided_left) {
+                position -= right * (deltaTime * current_sensitivity.x);
             }
             // if(app->getKeyboard().isPressed(GLFW_KEY_S)) position += back * (deltaTime * current_sensitivity.z);
             // // // Q & E moves the player up and down
