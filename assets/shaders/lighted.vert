@@ -1,27 +1,22 @@
 #version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec4 color;
-layout(location = 2) in vec2 tex_coord;
-layout(location = 3) in vec3 normal;
+out vec2 TexCoords;
+out vec3 WorldPos;
+out vec3 Normal;
 
-out Varyings {
-    vec4 color;
-    vec2 tex_coord;
-    vec3 normal;
-    vec3 view;
-} vs_out;
-
-uniform mat4 transform;
-uniform mat4 modelInverseTranspose; 
+uniform mat4 projection;
+uniform mat4 view;
 uniform mat4 model;
-uniform vec3 camera_position;
-void main(){
-    //TODO: (Req 7) Change the next line to apply the transformation matrix
-    vec3 world = (model* vec4(position, 1.0)).xyz;
-    gl_Position = transform *vec4(world,1.0);
-    vs_out.color = color;
-    vs_out.tex_coord = tex_coord;
-    vs_out.normal = normalize((modelInverseTranspose * vec4(normal,0.0)).xyz);
-    vs_out.view=camera_position-world;
+
+
+void main()
+{
+    TexCoords = aTexCoords;
+    WorldPos = vec3(model * vec4(aPos, 1.0));
+    mat3 normalMatrix = transpose(inverse(mat3(model)));
+    Normal = normalMatrix * aNormal;   
+    gl_Position =  projection * view * vec4(WorldPos, 1.0);
 }

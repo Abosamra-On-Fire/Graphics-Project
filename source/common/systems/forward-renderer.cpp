@@ -171,7 +171,8 @@ namespace our
 
         // TODO: (Req 9) Get the camera ViewProjection matrix and store it in VP
         glm::mat4 VP = camera->getProjectionMatrix(windowSize) * camera->getViewMatrix();
-
+        glm::mat4 view = camera->getViewMatrix();
+        glm::mat4 projection = camera->getProjectionMatrix(windowSize);
         // TODO: (Req 9) Set the OpenGL viewport using viewportStart and viewportSize
         glViewport(0, 0, windowSize.x, windowSize.y);
 
@@ -194,11 +195,18 @@ namespace our
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // TODO: (Req 9) Draw all the opaque commands
         //  Don't forget to set the "transform" uniform to be equal the model-view-projection matrix for each render command
+        glm::vec3 cameraPos = glm::vec3(camera->getOwner()->localTransform.position );
         for (auto &command : opaqueCommands)
         {
             command.material->setup();
-            command.material->shader->set("transform", VP );
-            glm::mat3 matrix=glm::mat3(transpose(inverse(command.localToWorld)));
+            command.material->shader->set("transform", VP);
+            command.material->shader->set("projection", projection);
+            command.material->shader->set("view", view);
+            command.material->shader->set("transform", VP);
+            command.material->shader->set("camPos", cameraPos);
+            command.material->shader->set("lightPositions[0]", glm::vec3(0,1,0));
+            command.material->shader->set("lightColors[0]", glm::vec3(50.0,50.0,50.0));
+            glm::mat3 matrix = glm::mat3(transpose(inverse(command.localToWorld)));
             command.material->shader->set("modelInverseTranspose", matrix);
             command.material->shader->set("model", command.localToWorld);
             glm::vec3 camera_position = glm::vec3(camera->getOwner()->getLocalToWorldMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
