@@ -7,7 +7,7 @@
             "width":1280,
             "height":720
         },
-        "fullscreen": true
+        "fullscreen": false
     },
     "scene": {
         "renderer":{
@@ -34,6 +34,7 @@
                 "ice_water1":"assets/textures/ice_water1.jpg",
                 "ice_water2":"assets/textures/ice_water2.jpg",
                 "wood": "assets/textures/wood.jpg",
+                "crossbow": "assets/textures/crossbow.png",
                 "glass": "assets/textures/glass-panels.png",
                 "monkey": "assets/textures/monkey.png",
                 "egg": "assets/textures/egg.jpg",
@@ -223,6 +224,21 @@
                     "texture": "monkey",
                     "sampler": "default"
                 },
+                "crossbow":{
+                    "type": "textured",
+                    "shader": "textured",
+                    "pipelineState": {
+                        "faceCulling":{
+                            "enabled": false
+                        },
+                        "depthTesting":{
+                            "enabled": true
+                        }
+                    },
+                    "tint": [1, 1, 1, 1],
+                    "texture": "crossbow",
+                    "sampler": "default"
+                },
                 "egg":{
                     "type": "textured",
                     "shader": "textured",
@@ -293,14 +309,14 @@
                 ],
                 "children": [
                     {
-                        "position": [0.7, -1, -0.6],
-                        "rotation": [-90, 80, 10],
-                        "scale": [0.4, 0.4, 0.4],
+                        "position": [1, -0.8, -0.8],
+                        "rotation": [0, -90, 10],
+                        "scale": [0.12, 0.12, 0.12],
                         "components": [
                             {
                                 "type": "Mesh Renderer",
                                 "mesh": "crossbow",
-                                "material": "wood"
+                                "material": "crossbow"
                             }
                         ]
                     }
