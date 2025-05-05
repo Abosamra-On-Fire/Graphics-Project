@@ -3,7 +3,8 @@
 
 #include "components/arrow.h"
 glm::vec3 constant_monster_center_correction = {0.1387785, 4.841342, 0.2150395};
-const int ARROW_MAX_LIFETIME_FRAMES= 200;
+const int ARROW_MAX_LIFETIME_FRAMES= 250;
+float MONSTER_BOUNDING_SPHERE_RADIUS = 6.75;
 namespace our {
     void ArrowCollisionSystem::initialize(World *world) {
         for (auto entity: world->getEntities())
@@ -53,7 +54,7 @@ namespace our {
                     monster_entity.first->localTransform.position + constant_monster_center_correction
                 );
 
-                if (distance < 6.75f * monster_entity.first->localTransform.scale.x) {
+                if (distance < MONSTER_BOUNDING_SPHERE_RADIUS * monster_entity.first->localTransform.scale.x) {
                     arrows_to_remove.push_back(arrow_entity.first);
                     monsters_hit.push_back(monster_entity.first);
                     hit=true;
@@ -85,7 +86,7 @@ namespace our {
             world->markForRemoval(arrow);
             arrow_entities.erase(arrow);
         }
-        // Update frame counters for surviving arrows
+        // Update frame after removing monsters/arrows
         world->deleteMarkedEntities();
     }
 }
