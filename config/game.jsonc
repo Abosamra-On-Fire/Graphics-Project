@@ -42,11 +42,17 @@
                 "monkey": "assets/textures/monkey.png",
                 "gold": "assets/textures/gold.jpg",
                 "monster": "assets/textures/ice_snow.jpg",
-                "albedo":"assets/textures/lighting/worn_metal4_albedo.png",
-                "ambientOcclusion":"assets/textures/lighting/worn_metal4_albedo.png",
-                "roughness":"assets/textures/lighting/worn_metal4_albedo.png",
-                "metallic":"assets/textures/lighting/worn_metal4_albedo.png",
-                "normal":"assets/textures/lighting/worn_metal4_Normal-dx.png"
+                "albedo":"assets/textures/lighting/stylized-ice-cave-walls-albedo.png",
+                "ambientOcclusion":"assets/textures/lighting/stylized-ice-cave-walls-ao.png",
+                "roughness":"assets/textures/lighting/stylized-ice-cave-walls-roughness.png",
+                "metallic":"assets/textures/lighting/stylized-ice-cave-walls-metallic.png",
+                "normal":"assets/textures/lighting/stylized-ice-cave-walls-normal-dx.png",
+
+                "albedoWood": "assets/textures/lighting/oak-wood-bare_albedo.png",
+                "ambientOcclusionWood": "assets/textures/lighting/oak-wood-bare_ao.png",
+                "roughnessWood": "assets/textures/lighting/oak-wood-bare_roughness.png",
+                "metallicWood": "assets/textures/lighting/oak-wood-bare_metallic.png",
+                "normalWood": "assets/textures/lighting/oak-wood-bare_normal-dx.png"
             },
             "meshes":{
                 "cube": "assets/models/cube.obj",
@@ -69,8 +75,8 @@
             },
             "materials":{
                 "metal":{
-                    "type": "lit",
-                    "shader": "lit",
+                    "type": "textured",
+                    "shader": "textured",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -127,8 +133,8 @@
                     "normal": "normal"
                 },
                 "air":{
-                    "type": "lit",
-                    "shader": "lit",
+                    "type": "textured",
+                    "shader": "textured",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -163,15 +169,15 @@
                     "tint": [1, 1, 1, 1],
                     "texture": "wood",
                     "sampler": "pixelated",
-                    "albedo": "albedo",
-                    "ambientOcclusion": "ambientOcclusion",
-                    "metallic": "metallic",
-                    "roughness": "roughness",
-                    "normal": "normal"
+                    "albedo": "albedoWood",
+                    "ambientOcclusion": "ambientOcclusionWood",
+                    "metallic": "metallicWood",
+                    "roughness": "roughnessWood",
+                    "normal": "normalWood"
                 },
                 "gold":{
-                    "type": "lit",
-                    "shader": "lit",
+                    "type": "textured",
+                    "shader": "textured",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -211,8 +217,8 @@
                     "normal": "normal"
                 },
                 "ice":{
-                    "type": "lit",
-                    "shader": "lit",
+                    "type": "textured",
+                    "shader": "textured",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -311,8 +317,8 @@
                     "normal": "normal"
                 },
                 "arrow_material": {
-                    "type": "lit",
-                    "shader": "lit",
+                    "type": "textured",
+                    "shader": "textured",
                     "pipelineState": {
                         "depthTesting": { "enabled": true }
                     },
@@ -448,7 +454,7 @@
                     {
                         "type": "Mesh Renderer",
                         "mesh": "ring",
-                        "material": "gold"
+                        "material": "air"
                     }
                 ]
             },

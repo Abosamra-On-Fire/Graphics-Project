@@ -81,7 +81,10 @@ namespace our
             return new TexturedMaterial();
         }
         else if (type == "lit")
+        {
+            printf("Lit Material Made");
             return new litMaterial();
+        }
         else
         {
             return new Material();

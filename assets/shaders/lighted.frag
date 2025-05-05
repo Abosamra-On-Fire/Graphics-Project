@@ -1,5 +1,5 @@
 #version 330 core
-out vec4 FragColor;
+out vec4 frag_color;
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
@@ -12,8 +12,8 @@ uniform sampler2D roughnessMap;
 uniform sampler2D aoMap;
 
 // lights
-uniform vec3 lightPositions[4];
-uniform vec3 lightColors[4];
+uniform vec3 lightPositions[16];
+uniform vec3 lightColors[16];
 
 uniform vec3 camPos;
 
@@ -92,12 +92,12 @@ void main()
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
-    vec3 F0 = vec3(0.04); 
+    vec3 F0 = albedo; 
     F0 = mix(F0, albedo, metallic);
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < 1; ++i) 
+    for(int i = 0; i < 8; ++i) 
     {
         // calculate per-light radiance
         vec3 L = normalize(lightPositions[i] - WorldPos);
@@ -135,7 +135,7 @@ void main()
     
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).
-    vec3 ambient = vec3(0.03) * albedo * ao;
+    vec3 ambient = vec3(0.4) * albedo * ao;
     
     vec3 color = ambient + Lo;
 
@@ -144,5 +144,5 @@ void main()
     // gamma correct
     color = pow(color, vec3(1.0/2.2)); 
 
-    FragColor = vec4(color, 1.0);
+    frag_color = vec4(color, 1.0);
 }

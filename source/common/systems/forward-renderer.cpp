@@ -195,17 +195,34 @@ namespace our
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // TODO: (Req 9) Draw all the opaque commands
         //  Don't forget to set the "transform" uniform to be equal the model-view-projection matrix for each render command
-        glm::vec3 cameraPos = glm::vec3(camera->getOwner()->localTransform.position );
+        glm::vec3 cameraPos = glm::vec3(camera->getOwner()->localTransform.position);
         for (auto &command : opaqueCommands)
         {
             command.material->setup();
-            command.material->shader->set("transform", VP);
+            // command.material->shader->set("transform", VP);
             command.material->shader->set("projection", projection);
             command.material->shader->set("view", view);
-            command.material->shader->set("transform", VP);
+            command.material->shader->set("transform", VP * command.localToWorld);
             command.material->shader->set("camPos", cameraPos);
-            command.material->shader->set("lightPositions[0]", glm::vec3(0,1,0));
-            command.material->shader->set("lightColors[0]", glm::vec3(50.0,50.0,50.0));
+            command.material->shader->set("lightPositions[0]", glm::vec3(3.0, 3.0, 0.0));
+            command.material->shader->set("lightColors[0]", glm::vec3(100.0, 100.0, 100.0));
+
+            command.material->shader->set("lightPositions[1]", glm::vec3(2.8, 3.0, 0.0));
+            command.material->shader->set("lightColors[1]", glm::vec3(100.0, 100.0, 100.0));
+
+            command.material->shader->set("lightPositions[2]", glm::vec3(2.5, 3.0, 0.0));
+            command.material->shader->set("lightColors[2]", glm::vec3(100.0, 100.0, 100.0));
+
+            command.material->shader->set("lightPositions[3]", glm::vec3(2.0, 3.0, 0.0));
+            command.material->shader->set("lightColors[3]", glm::vec3(100.0, 100.0, 100.0));
+            command.material->shader->set("lightPositions[4]", glm::vec3(3.0, 3.0, -65.0));
+            command.material->shader->set("lightColors[4]", glm::vec3(100.0, 100.0, 100.0));
+            command.material->shader->set("lightPositions[5]", glm::vec3(2.8, 3.0, -65.0));
+            command.material->shader->set("lightColors[5]", glm::vec3(100.0, 100.0, 100.0));
+            command.material->shader->set("lightPositions[6]", glm::vec3(2.5, 3.0, -65.0));
+            command.material->shader->set("lightColors[6]", glm::vec3(100.0, 100.0, 100.0));
+            command.material->shader->set("lightPositions[7]", glm::vec3(3.5, 0, -75));
+            command.material->shader->set("lightColors[7]", glm::vec3(100.0, 100.0, 100.0));
             glm::mat3 matrix = glm::mat3(transpose(inverse(command.localToWorld)));
             command.material->shader->set("modelInverseTranspose", matrix);
             command.material->shader->set("model", command.localToWorld);
