@@ -30,6 +30,7 @@
                 "moon": "assets/textures/moon.jpg",
                 "grass": "assets/textures/grass_ground_d.jpg",
                 "ice":"assets/textures/ice_snow.jpg",
+                "air":"assets/textures/air.png",
                 "ice_water1":"assets/textures/ice_water1.jpg",
                 "ice_water2":"assets/textures/ice_water2.jpg",
                 "wood": "assets/textures/wood.jpg",
@@ -46,8 +47,10 @@
                 "plane": "assets/models/plane.obj",
                 "igloo": "assets/models/igloo.obj",
                 "coins": "assets/models/coins.obj",
+                "hallway": "assets/models/hallway.obj",
                 "sphere": "assets/models/sphere.obj",
-                "arrow": "assets/models/arrow_2.obj"
+                "arrow": "assets/models/arrow_2.obj",
+                "ring": "assets/models/ring.obj"
             },
             "samplers":{
                 "default":{},
@@ -102,6 +105,28 @@
                     "transparent": true,
                     "tint": [1, 1, 1, 1],
                     "texture": "glass",
+                    "sampler": "pixelated"
+                },
+                "air":{
+                    "type": "textured",
+                    "shader": "textured",
+                    "pipelineState": {
+                        "faceCulling":{
+                            "enabled": false
+                        },
+                        "depthTesting":{
+                            "enabled": true
+                        },
+                        "blending":{
+                            "enabled": true,
+                            "sourceFactor": "GL_SRC_ALPHA",
+                            "destinationFactor": "GL_ONE_MINUS_SRC_ALPHA"
+                        },
+                        "depthMask": false
+                    },
+                    "transparent": true,
+                    // "tint": [1, 1, 1, 1],
+                    "texture": "air",
                     "sampler": "pixelated"
                 },
                 "wood":{
@@ -241,6 +266,7 @@
         "world":[
             {
                 "position": [3, 3, 4.5],
+                "name": "camera",
                 "components": [
                     {
                         "type": "Camera"
@@ -268,7 +294,7 @@
                 "rotation": [0, 45, 0],
                 "position": [-5, 0, -2],
                 "scale": [0.5, 0.5, 0.5],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -281,7 +307,7 @@
                 "rotation": [0, -50, 0],
                 "position": [13, 0, -4],
                 "scale": [0.5, 0.5, 0.5],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -294,7 +320,7 @@
                 "rotation": [0, 0, 0],
                 "position": [3.5, 0, -6.7],
                 "scale": [0.7, 0.7, 0.7],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -307,10 +333,36 @@
                 "position": [0, -4, 0],
                 "rotation": [-90, 0, 90],
                 "scale": [4, 4, 4],
+                "name":"wall",
                 "components": [
                     {
                         "type": "Mesh Renderer",
                         "mesh": "igloo",
+                        "material": "ice"
+                    }
+                ]
+            },
+            {// mamar1
+                "position": [0, -4, -8],
+                "rotation": [-90, 0, 90],
+                "scale": [4, 4, 4],
+                "components": [
+                    {
+                        "type": "Mesh Renderer",
+                        "mesh": "hallway",
+                        "material": "ice"
+                    }
+                ]
+            },
+            {// mamar2
+                "position": [0, -4, -16],
+                "rotation": [-90, 0, 90],
+                "scale": [4, 4, 4],
+                "name":"hallway",
+                "components": [
+                    {
+                        "type": "Mesh Renderer",
+                        "mesh": "hallway",
                         "material": "ice"
                     }
                 ]
@@ -324,6 +376,19 @@
                         "type": "Mesh Renderer",
                         "mesh": "igloo",
                         "material": "ice"
+                    }
+                ]
+            },
+            {
+                "position": [5, 2, -63],
+                "rotation": [0, 180, 0],
+                "scale": [12, 4, 14],
+                "name":"wall2",
+                "components": [
+                    {
+                        "type": "Mesh Renderer",
+                        "mesh": "ring",
+                        "material": "gold"
                     }
                 ]
             },
@@ -391,7 +456,7 @@
                 "rotation": [0, 0, 0],
                 "position": [3.5, 0, -80],
                 "scale": [2, 2, 2],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -404,7 +469,7 @@
                 "rotation": [0, -30, 0],
                 "position": [22, 0, -78],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -417,7 +482,7 @@
                 "rotation": [0, 30, 0],
                 "position": [-15, 0, -78],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -430,7 +495,7 @@
                 "rotation": [0, 80, 0],
                 "position": [-20, 0, -65],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -443,7 +508,7 @@
                 "rotation": [0, -80, 0],
                 "position": [27, 0, -65],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -456,7 +521,7 @@
                 "rotation": [0, 115, 0],
                 "position": [-17, 0, -50],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -469,7 +534,7 @@
                 "rotation": [0, -115, 0],
                 "position": [25, 0, -50],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name":"monster",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -482,6 +547,7 @@
                 "position": [2, 15, -14],
                 "rotation": [30, 0, 0],
                 "scale": [7, 7, 7],
+                "name":"plane",
                 "components": [
                     {
                         "type": "Mesh Renderer",
@@ -490,11 +556,35 @@
                     }
                 ]
             }
-            //,
+            ,
             // {
-            //     "position": [0, 1, 2],
-            //     "rotation": [0, 0, 0],
-            //     "scale": [2, 2, 2],
+            //     "position": [30,0, -45],
+            //     "rotation": [0, 60, 0],
+            //     "scale": [4,4,4],
+            //     "components": [
+            //         {
+            //             "type": "Mesh Renderer",
+            //             "mesh": "plane",
+            //             "material": "glass"
+            //         }
+            //     ]
+            // },
+            // {
+            //     "position": [20,0, -45],
+            //     "rotation": [0, 60, 0],
+            //     "scale": [4,4,4],
+            //     "components": [
+            //         {
+            //             "type": "Mesh Renderer",
+            //             "mesh": "plane",
+            //             "material": "glass"
+            //         }
+            //     ]
+            // },
+            // {
+            //     "position": [10,0, -45],
+            //     "rotation": [0, 40, 0],
+            //     "scale": [4,4,4],
             //     "components": [
             //         {
             //             "type": "Mesh Renderer",
@@ -551,7 +641,7 @@
             //         }
             //     ]
             // },
-            ,
+            
             {
                 "position": [0, 10, 0],
                 "rotation": [45, 45, 0],

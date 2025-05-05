@@ -6,6 +6,7 @@
 #include <systems/free-camera-controller.hpp>
 #include <systems/movement.hpp>
 #include <asset-loader.hpp>
+#include <systems/collision.hpp>
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp> // For distance squared
@@ -18,6 +19,8 @@ class Playstate : public our::State {
     our::ForwardRenderer renderer;
     our::FreeCameraControllerSystem cameraController;
     our::MovementSystem movementSystem;
+    our::CollisionSystem collisionSystem;
+
     our::TexturedMaterial *Timemat;
     our::Mesh *timerRectangle;
     our::TexturedMaterial *crosshairMat;
@@ -90,7 +93,62 @@ class Playstate : public our::State {
         cameraController.enter(getApp());
         auto size = getApp()->getFrameBufferSize();
         renderer.initialize(size, config["renderer"]);
+
+        collisionSystem.init_collision_wall1(&world);
     }
+
+    // void drawCrosshair() {
+    //     glEnable(GL_BLEND);
+    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //     glm::ivec2 size = getApp()->getFrameBufferSize();
+    //     glViewport(0, 0, size.x, size.y);
+
+    //     glm::mat4 projection = glm::ortho(0.0f, (float) size.x, (float) size.y, 0.0f, -1.0f, 1.0f);
+
+    //     // Crosshair size (assuming it's a square)
+    //     float crosshairSize = 32.0f; // Adjust as needed
+
+    //     // Center the crosshair
+    //     glm::mat4 model = glm::mat4(1.0f);
+    //     model = glm::translate(model, glm::vec3((size.x - crosshairSize) / 2.0f,
+    //                                             (size.y - crosshairSize) / 2.0f,
+    //                                             0.0f));
+    //     model = glm::scale(model, glm::vec3(crosshairSize, crosshairSize, 1.0f));
+
+    //     crosshairMat->setup();
+    //     crosshairMat->shader->set("transform", projection * model);
+    //     crosshairMesh->draw();
+
+    //     glDisable(GL_BLEND);
+    // }
+
+    // void timerDraw(float timeRemaining) {
+    //     glEnable(GL_BLEND);
+    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //     glm::ivec2 size = getApp()->getFrameBufferSize();
+    //     glViewport(0, 0, size.x, size.y);
+
+    //     glm::mat4 projection = glm::ortho(0.0f, (float) size.x, (float) size.y, 0.0f, -1.0f, 1.0f);
+
+    //     float timerWidth = 324.0f;
+    //     float timerHeight = 120.0f;
+    //     float margin = 30.0f;
+
+    //     glm::mat4 model = glm::mat4(1.0f);
+    //     model = glm::translate(model, glm::vec3(size.x - (timerWidth + size.x) / 2, margin, 0.0f));
+    //     model = glm::scale(model, glm::vec3(timerWidth, timerHeight, 1.0f));
+
+    //     float timeRatio = timeRemaining / totalTime;
+    //     Timemat->tint = glm::vec4(1.0f, timeRatio, timeRatio, 1.0f);
+
+    //     Timemat->setup();
+    //     Timemat->shader->set("transform", projection * model);
+    //     timerRectangle->draw();
+
+    //     glDisable(GL_BLEND);
+    // }
 
     void drawCrosshair() {
         glEnable(GL_BLEND);
@@ -146,8 +204,18 @@ class Playstate : public our::State {
     }
 
     void onDraw(double deltaTime) override {
-        movementSystem.update(&world, (float) deltaTime);
-        cameraController.update(&world, (float) deltaTime);
+        // Here, we just run a bunch of systems to control the world logic
+        movementSystem.update(&world, (float)deltaTime);
+        int  collision_val=collisionSystem.update(&world, (float)deltaTime);
+        bool is_collidied_forword=(collision_val==2);
+        bool is_collidied_backword=(collision_val==3);
+        bool is_collidied_right=(collision_val==4);
+        bool is_collidied_left=(collision_val==5);
+        cameraController.update(&world, (float)deltaTime,is_collidied_forword,is_collidied_backword,is_collidied_right,is_collidied_left);
+        auto& keyboard = getApp()->getKeyboard();
+
+
+        // And finally we use the renderer system to draw the scene
         renderer.render(&world);
         // We also run the arrow collision system to check for collisions
         arrowCollisionSystem.update(&world);
@@ -188,7 +256,7 @@ class Playstate : public our::State {
             getApp()->changeState("lose");
         }
 
-        auto &keyboard = getApp()->getKeyboard();
+        // auto &keyboard = getApp()->getKeyboard();
         if (keyboard.justPressed(GLFW_KEY_ESCAPE)) {
             getApp()->changeState("menu");
         }
