@@ -7,7 +7,7 @@
             "width":1280,
             "height":720
         },
-        "fullscreen": false
+        "fullscreen": true
     },
     "scene": {
         "renderer":{
@@ -482,12 +482,17 @@
                 "rotation": [0, -30, 0],
                 "position": [22, 0, -78],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name": "monster2",
                 "components": [
                     {
                         "type": "Mesh Renderer",
                         "mesh": "monster",
                         "material": "ice_water1"
+                    },
+                    {
+                        "type": "Movement",
+                        "linearVelocity": [-0.2, 0, 0]
+                        
                     }
                 ]
             },
@@ -495,12 +500,17 @@
                 "rotation": [0, 30, 0],
                 "position": [-15, 0, -78],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name": "monster2",
                 "components": [
                     {
                         "type": "Mesh Renderer",
                         "mesh": "monster",
                         "material": "ice_water1"
+                    },
+                    {
+                        "type": "Movement",
+                        "linearVelocity": [-0.2, 0, 0]
+                        
                     }
                 ]
             },
@@ -508,25 +518,35 @@
                 "rotation": [0, 80, 0],
                 "position": [-20, 0, -65],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name": "monster2",
                 "components": [
                     {
                         "type": "Mesh Renderer",
                         "mesh": "monster",
                         "material": "ice_water1"
+                    },
+                    {
+                        "type": "Movement",
+                        "linearVelocity": [0, 0, 0.2]
+                        
                     }
                 ]
             },
-            {//right top
+            {//right mid
                 "rotation": [0, -80, 0],
                 "position": [27, 0, -65],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name": "monster2",
                 "components": [
                     {
                         "type": "Mesh Renderer",
                         "mesh": "monster",
                         "material": "ice_water1"
+                    },
+                    {
+                        "type": "Movement",
+                        "linearVelocity": [0, 0, -0.2]
+                        
                     }
                 ]
             },
@@ -534,12 +554,17 @@
                 "rotation": [0, 115, 0],
                 "position": [-17, 0, -50],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name": "monster2",
                 "components": [
                     {
                         "type": "Mesh Renderer",
                         "mesh": "monster",
                         "material": "ice_water1"
+                    },
+                    {
+                        "type": "Movement",
+                        "linearVelocity": [0.1, 0, 0.3]
+                        
                     }
                 ]
             },
@@ -547,12 +572,17 @@
                 "rotation": [0, -115, 0],
                 "position": [25, 0, -50],
                 "scale": [1, 1, 1],
-                "name": "monster",
+                "name": "monster2",
                 "components": [
                     {
                         "type": "Mesh Renderer",
                         "mesh": "monster",
                         "material": "ice_water1"
+                    },
+                    {
+                        "type": "Movement",
+                        "linearVelocity": [-0.1, 0, -0.3]
+                        
                     }
                 ]
             },
