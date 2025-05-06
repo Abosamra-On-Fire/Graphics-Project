@@ -160,7 +160,6 @@ namespace our
             if (entity->name == "lightSource")
                 if (auto lightSource = entity->getComponent<lighting>(); lightSource)
                 {
-                    printf("LIGHT SOURCE HENAAAAAAAAA");
                     if (lightSourcesCount < 16)
                     {
                         lightColors[lightSourcesCount] = lightSource->color;
