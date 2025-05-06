@@ -323,19 +323,19 @@ namespace our
             }
             for(const auto &entity : world->getEntities())
             {
-                if (((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==2)
+                if ((entity->name == "monster" ) && checkCollision(entity, player)==2)
                 {
                     return 2;
                 }
-                else if(((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==3)
+                else if((entity->name == "monster" ) && checkCollision(entity, player)==3)
                 {
                     return 3;
                 }
-                else if(((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==4)
+                else if((entity->name == "monster" ) && checkCollision(entity, player)==4)
                 {
                     return 4;
                 }
-                else if(((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==5)
+                else if((entity->name == "monster" ) && checkCollision(entity, player)==5)
                 {
                     return 5;
                 }   
