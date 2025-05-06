@@ -1207,8 +1207,8 @@
             0
         ],
         "speed": 25,
-        "right_offset": 0.3,
-        "forward_offset": 0.5,
-        "up_offset": -0.1
+        "right_offset": 0.55,
+        "forward_offset": 0.55,
+        "up_offset": -0.3
     }
 }
