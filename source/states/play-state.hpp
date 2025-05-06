@@ -13,6 +13,8 @@
 #include <components/arrow.h>
 #include <systems/arrow-collision-system.h>
 
+
+
 // This state shows how to use the ECS framework and deserialization.
 class Playstate : public our::State {
     our::World world;
@@ -98,58 +100,7 @@ class Playstate : public our::State {
         arrowCollisionSystem.initialize(&world);
     }
 
-    // void drawCrosshair() {
-    //     glEnable(GL_BLEND);
-    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //     glm::ivec2 size = getApp()->getFrameBufferSize();
-    //     glViewport(0, 0, size.x, size.y);
-
-    //     glm::mat4 projection = glm::ortho(0.0f, (float) size.x, (float) size.y, 0.0f, -1.0f, 1.0f);
-
-    //     // Crosshair size (assuming it's a square)
-    //     float crosshairSize = 32.0f; // Adjust as needed
-
-    //     // Center the crosshair
-    //     glm::mat4 model = glm::mat4(1.0f);
-    //     model = glm::translate(model, glm::vec3((size.x - crosshairSize) / 2.0f,
-    //                                             (size.y - crosshairSize) / 2.0f,
-    //                                             0.0f));
-    //     model = glm::scale(model, glm::vec3(crosshairSize, crosshairSize, 1.0f));
-
-    //     crosshairMat->setup();
-    //     crosshairMat->shader->set("transform", projection * model);
-    //     crosshairMesh->draw();
-
-    //     glDisable(GL_BLEND);
-    // }
-
-    // void timerDraw(float timeRemaining) {
-    //     glEnable(GL_BLEND);
-    //     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    //     glm::ivec2 size = getApp()->getFrameBufferSize();
-    //     glViewport(0, 0, size.x, size.y);
-
-    //     glm::mat4 projection = glm::ortho(0.0f, (float) size.x, (float) size.y, 0.0f, -1.0f, 1.0f);
-
-    //     float timerWidth = 324.0f;
-    //     float timerHeight = 120.0f;
-    //     float margin = 30.0f;
-
-    //     glm::mat4 model = glm::mat4(1.0f);
-    //     model = glm::translate(model, glm::vec3(size.x - (timerWidth + size.x) / 2, margin, 0.0f));
-    //     model = glm::scale(model, glm::vec3(timerWidth, timerHeight, 1.0f));
-
-    //     float timeRatio = timeRemaining / totalTime;
-    //     Timemat->tint = glm::vec4(1.0f, timeRatio, timeRatio, 1.0f);
-
-    //     Timemat->setup();
-    //     Timemat->shader->set("transform", projection * model);
-    //     timerRectangle->draw();
-
-    //     glDisable(GL_BLEND);
-    // }
 
     void drawCrosshair() {
         glEnable(GL_BLEND);
@@ -238,7 +189,7 @@ class Playstate : public our::State {
 
                 // Check win condition
                 float distance = glm::distance(cameraPosition, winPosition);
-                if (distance < winDistanceThreshold) {
+                if (distance < winDistanceThreshold && arrowCollisionSystem.killedAllMonsters()) {
                     std::cerr << "WIN! Distance to target: " << distance << std::endl;
                     getApp()->changeState("win");
                     return;

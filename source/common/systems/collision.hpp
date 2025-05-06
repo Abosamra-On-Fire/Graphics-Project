@@ -264,16 +264,16 @@ namespace our
             glm::vec3 playerPos = playerComponent->localTransform.position;
             glm::vec3 playerForward3D = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0));
             glm::vec3 playerRight3D   = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(1, 0, 0, 0));
-            
+
             // Project onto XZ plane (ignore Y)
             playerForward3D.y = 0.0f;
             playerRight3D.y = 0.0f;
-            
+
             glm::vec3 playerForward = glm::normalize(playerForward3D);
             glm::vec3 playerRight   = glm::normalize(playerRight3D);
-            
-            float collisionThreshold = 1.0f; // distance threshold
-            float angleThreshold = 0.7f;     // dot product threshold (~60 degrees cone)
+
+            float collisionThreshold = 1.5f; // distance threshold
+            float angleThreshold = 0.7f;     
         
             for (const auto& vertex : vertices3)
             {
@@ -290,7 +290,7 @@ namespace our
                     if (facingDot > angleThreshold )
                     {
                         
-                        return 2; 
+                        return 2; // Collision: close and in front (or behind, if you want both)
                     }
                     else if(facingDot< -angleThreshold)
                     {
@@ -304,6 +304,7 @@ namespace our
                     {
                         return 5;
                     }
+
                 }
             }
         
