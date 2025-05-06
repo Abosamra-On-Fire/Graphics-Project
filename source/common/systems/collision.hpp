@@ -113,7 +113,7 @@ namespace our
         // }
         int checkCollision(Entity* objectComponent, Entity* playerComponent) 
         {
-            std::cout<<"Collision check\n";
+            //std::cout<<"Collision check\n";
             glm::vec3 playerPos = playerComponent->localTransform.position;
             glm::vec3 objectPos = objectComponent->localTransform.position;
             objectPos.y += 3.0f; // Ignore vertical component

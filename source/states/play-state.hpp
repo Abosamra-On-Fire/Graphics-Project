@@ -95,6 +95,7 @@ class Playstate : public our::State {
         renderer.initialize(size, config["renderer"]);
 
         collisionSystem.init_collision_wall1(&world);
+        arrowCollisionSystem.initialize(&world);
     }
 
     // void drawCrosshair() {

@@ -9,12 +9,12 @@ namespace our
     {
         std::unordered_map<Entity*,int> monster_entities;
         std::unordered_map<Entity*,int> arrow_entities;
-        bool initialized = false;
     public:
         void update(World* world);
         void initialize(World* world);
         float distanceBetweenTwoPoints(glm::vec3 point1, glm::vec3 point2);
         void addArrow(Entity*arrow_entity);
         bool killedAllMonsters();
+        int number_of_hits = 0;
     };
 }

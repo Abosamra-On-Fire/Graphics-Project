@@ -7,6 +7,8 @@ const int ARROW_MAX_LIFETIME_FRAMES= 250;
 float MONSTER_BOUNDING_SPHERE_RADIUS = 6.75;
 namespace our {
     void ArrowCollisionSystem::initialize(World *world) {
+        monster_entities.clear();
+        arrow_entities.clear();
         for (auto entity: world->getEntities())
             if (entity->name.find("monster")!=std::string::npos) {
                 float scale = entity->localTransform.scale.x;
@@ -18,8 +20,7 @@ namespace our {
                 else numberOfHitsNeeded=3;
                 monster_entities.insert({entity,numberOfHitsNeeded});
             }
-        // std::cout<<"inserted"<<monster_entities.size()<<"monsters"<<std::endl;
-        initialized = true;
+        number_of_hits=0;
     }
 
     float ArrowCollisionSystem::distanceBetweenTwoPoints(glm::vec3 point1, glm::vec3 point2) {
@@ -35,11 +36,6 @@ namespace our {
     }
 
     void ArrowCollisionSystem::update(World* world) {
-        static int number_of_hits = 0;
-        if (!initialized) {
-            initialize(world);
-        }
-
         // Collect arrows to remove first
         std::vector<Entity*> arrows_to_remove;
         // Collect monsters to remove
