@@ -111,7 +111,7 @@ namespace our
         //     // Require the object to be mostly in front (adjust threshold as needed)
         //     return angleDot > 0.7f; // ~45-degree cone
         // }
-        int checkCollision(Entity* objectComponent, Entity* playerComponent) 
+        std::vector<int> checkCollision(Entity* objectComponent, Entity* playerComponent) 
         {
             // std::cout<<"Collision check\n";
             glm::vec3 playerPos = playerComponent->localTransform.position;
@@ -122,9 +122,9 @@ namespace our
             float distance = glm::distance(playerPos, objectPos);
         
             float collisionThreshold = 3.0f;
-        
+            std::vector<int> collisionType;
             if (distance > collisionThreshold)
-                return false;
+                return collisionType;
             
             toObject.y = 0.0f;
             glm::vec3 toObjectDir = glm::normalize(toObject);
@@ -144,19 +144,19 @@ namespace our
             float dotRight = glm::dot(playerRight, toObjectDir);
         
             // Forward
-            if (dotForward > 0.7f) return 2;
+            if (dotForward > 0.7f) collisionType.push_back(2);
             // Backward
-            else if (dotForward < -0.7f) return 3;
+            else if (dotForward < -0.7f) collisionType.push_back(3);
             // Right
-            else if (dotRight > 0.7f) return 4;
+            else if (dotRight > 0.7f) collisionType.push_back(4);
             // Left
-            else if (dotRight < -0.7f) return 5;
+            else if (dotRight < -0.7f)  collisionType.push_back(5);
         
-            return 0;
+            return collisionType;
         }
         
 
-        int checkWallCollision1(Entity* playerComponent)
+        std::vector<int> checkWallCollision1(Entity* playerComponent)
         {
             glm::vec3 playerPos = playerComponent->localTransform.position;
             glm::vec3 playerForward3D = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0));
@@ -165,7 +165,7 @@ namespace our
             // Project onto XZ plane (ignore Y)
             playerForward3D.y = 0.0f;
             playerRight3D.y = 0.0f;
-            
+            std::vector<int>collisionType;
             glm::vec3 playerForward = glm::normalize(playerForward3D);
             glm::vec3 playerRight   = glm::normalize(playerRight3D);
             
@@ -185,28 +185,32 @@ namespace our
                     float dotRight = glm::dot(playerRight, toVertexDir);
                     if (facingDot > angleThreshold )
                     {
-                        return 2; 
+                        std::cout<<"Collision front\n";
+                        collisionType.push_back(2); 
                     }
                     else if(facingDot< -angleThreshold)
                     {
-                        return 3;
+                        std::cout<<"Collision back\n";
+                        collisionType.push_back(3);
                     }
                     else if(dotRight > angleThreshold)
                     {
-                        return 4;
+                        std::cout<<"Collision right\n";
+                        collisionType.push_back(4);
                     }
                     else if(dotRight < -angleThreshold)
                     {
-                        return 5;
+                        std::cout<<"Collision left\n";
+                        collisionType.push_back(5);
                     }
 
                 }
             }
         
-            return 0; // No collision
+            return collisionType;
         }
         
-        int checkWallCollision2(Entity* playerComponent)
+        std::vector<int> checkWallCollision2(Entity* playerComponent)
         {
 
             glm::vec3 playerPos = playerComponent->localTransform.position;
@@ -216,7 +220,7 @@ namespace our
             // Project onto XZ plane (ignore Y)
             playerForward3D.y = 0.0f;
             playerRight3D.y = 0.0f;
-
+            std::vector<int>collisionType;
             glm::vec3 playerForward = glm::normalize(playerForward3D);
             glm::vec3 playerRight   = glm::normalize(playerRight3D);
 
@@ -238,27 +242,27 @@ namespace our
                     if (facingDot > angleThreshold )
                     {
                         
-                        return 2; // Collision: close and in front (or behind, if you want both)
+                        collisionType.push_back(2);
                     }
                     else if(facingDot< -angleThreshold)
                     {
-                        return 3;
+                        collisionType.push_back(3);
                     }
                     else if(dotRight > angleThreshold)
                     {
-                        return 4;
+                        collisionType.push_back(4);
                     }
                     else if(dotRight < -angleThreshold)
                     {
-                        return 5;
+                        collisionType.push_back(5);
                     }
 
                 }
             }
         
-            return false; // No collision
+            return collisionType;
         }
-        int checkWallCollision3(Entity* playerComponent)
+        std::vector<int> checkWallCollision3(Entity* playerComponent)
         {
 
             glm::vec3 playerPos = playerComponent->localTransform.position;
@@ -271,9 +275,9 @@ namespace our
 
             glm::vec3 playerForward = glm::normalize(playerForward3D);
             glm::vec3 playerRight   = glm::normalize(playerRight3D);
-
-            float collisionThreshold = 1.5f; // distance threshold
-            float angleThreshold = 0.7f;     
+            std::vector<int>collisionType;
+            float collisionThreshold = 1.0f; // distance threshold
+            float angleThreshold = 0.7f;     // dot product threshold (~60 degrees cone)
         
             for (const auto& vertex : vertices3)
             {
@@ -290,28 +294,28 @@ namespace our
                     if (facingDot > angleThreshold )
                     {
                         
-                        return 2; // Collision: close and in front (or behind, if you want both)
+                        collisionType.push_back(2);
                     }
                     else if(facingDot< -angleThreshold)
                     {
-                        return 3;
+                        collisionType.push_back(3);
                     }
                     else if(dotRight > angleThreshold)
                     {
-                        return 4;
+                        collisionType.push_back(4);
                     }
                     else if(dotRight < -angleThreshold)
                     {
-                        return 5;
+                        collisionType.push_back(5);
                     }
 
                 }
             }
         
-            return false; // No collision
+            return collisionType; // No collision
         }
         
-        int update(World *world, float deltaTime)
+        std::vector<int> update(World *world, float deltaTime)
         {
             Entity *player ;
             for (const auto &entity : world->getEntities())
@@ -322,74 +326,38 @@ namespace our
                     break;
                 }
             }
+            std::vector<int> result;
+
             for(const auto &entity : world->getEntities())
             {
-                if (((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==2)
-                {
-                    return 2;
+                //hazawed vector ylem kol dol ma3a ba3d aw yqaren hena we yraga3 vector wa7ed bs fehom 34an 
+                // ele 7asel eno byreturn 3and el monster 8aleban
+              
+                if (entity->name == "monster" || entity->name == "monster2") {
+                    auto collision = checkCollision(entity, player);
+                    result.insert(result.end(), collision.begin(), collision.end());
                 }
-                else if(((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==3)
-                {
-                    return 3;
+                else if (entity->name == "wall") {
+                    auto collision = checkWallCollision1(player);
+                    result.insert(result.end(), collision.begin(), collision.end());
                 }
-                else if(((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==4)
-                {
-                    return 4;
+                else if (entity->name == "wall2") {
+                    auto collision = checkWallCollision2(player);
+                    result.insert(result.end(), collision.begin(), collision.end());
                 }
-                else if(((entity->name == "monster" )||(entity->name == "monster2" )) && checkCollision(entity, player)==5)
-                {
-                    return 5;
-                } 
-                if ((entity->name == "wall" ) && checkWallCollision1(player)==2)
-                {
-                    return 2;
+                else if (entity->name == "hallway") {
+                    auto collision = checkWallCollision3(player);
+                    result.insert(result.end(), collision.begin(), collision.end());
                 }
-                else if((entity->name == "wall" ) && checkWallCollision1(player)==3)
-                {
-                    return 3;
-                }
-                else if((entity->name == "wall" ) && checkWallCollision1(player)==4)
-                {
-                    return 4;
-                }
-                else if((entity->name == "wall" ) && checkWallCollision1(player)==5)
-                {
-                    return 5;
-                }
-                if ((entity->name == "wall2" ) && checkWallCollision2(player)==2)
-                {
-                    return 2;
-                }
-                else if((entity->name == "wall2" ) && checkWallCollision2(player)==3)
-                {
-                    return 3;
-                }
-                else if((entity->name == "wall2" ) && checkWallCollision2(player)==4)
-                {
-                    return 4;
-                }
-                else if((entity->name == "wall2" ) && checkWallCollision2(player)==5)
-                {
-                    return 5;
-                }
-                if((entity->name == "hallway" ) && checkWallCollision3(player)==2)
-                {
-                    return 2;
-                }
-                else if((entity->name == "hallway" ) && checkWallCollision3(player)==3)
-                {
-                    return 3;
-                }
-                else if((entity->name == "hallway" ) && checkWallCollision3(player)==4)
-                {
-                    return 4;
-                }
-                else if((entity->name == "hallway" ) && checkWallCollision3(player)==5)
-                {
-                    return 5;
-                }
+                
+                // Remove duplicates to get only unique values
+                std::sort(result.begin(), result.end());
+                result.erase(std::unique(result.begin(), result.end()), result.end());
+                
+                
             }
-            return 0;
+
+            return result;
         }
        
     };
