@@ -438,6 +438,7 @@
         },
         "world": [
             {
+                "name": "camera",
                 "position": [
                     3,
                     3,
@@ -554,6 +555,7 @@
                 ]
             },
             { //first room
+                "name":"wall",
                 "position": [
                     0,
                     -4,
@@ -578,6 +580,7 @@
                 ]
             },
             { // mamar1
+                "name":"hallway",
                 "position": [
                     0,
                     -4,
@@ -626,6 +629,7 @@
                 ]
             },
             { /////////////////////////second room
+                "name":"wall2",
                 "position": [
                     13.3,
                     -10,
@@ -650,6 +654,7 @@
                 ]
             },
             {
+                "name":"wall2",
                 "position": [
                     5,
                     2,
@@ -1125,7 +1130,6 @@
             //         }
             //     ]
             // },
-            ,
             // {
             //     "position": [0, 10, 0],
             //     "rotation": [45, 45, 0],

@@ -16,7 +16,7 @@ namespace our
     class CollisionSystem
     {
         // std::vector<Entity *> cars, batteries, planes, packages;
-        Entity *player;
+        // Entity *player;
         std::vector<glm::vec3> vertices;
         std::vector<glm::vec3> vertices2;
         std::vector<glm::vec3> vertices3;
@@ -44,10 +44,10 @@ namespace our
         std::cout << "Wall vertices: " << vertices.size() << ", Wall2 vertices: " << vertices2.size() << ", Hallway vertices: " << vertices3.size() << "\n";
         
     }
-        void setPlayer(Entity *player)
-        {
-            this->player = player;
-        }
+        // void setPlayer(Entity *player)
+        // {
+        //     this->player = player;
+        // }
 
     std::vector<glm::vec3> loadVerticesInYRange(const std::string& filename, Entity *wall, float minY = 2.5f, float maxY = 3.5f) {
         std::vector<glm::vec3> vertices;
@@ -77,6 +77,7 @@ namespace our
 
         return vertices;
     }
+    
 
         // bool checkCollision(Entity* objectComponent, Entity* playerComponent) 
         // {
