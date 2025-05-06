@@ -132,6 +132,7 @@ namespace our
         CameraComponent *camera = nullptr;
         opaqueCommands.clear();
         transparentCommands.clear();
+        lightSourcesCount = 0;
         for (auto entity : world->getEntities())
         {
             // If we hadn't found a camera yet, we look for a camera in this entity
@@ -158,16 +159,18 @@ namespace our
                 }
             }
             if (entity->name == "lightSource")
-                if (auto lightSource = entity->getComponent<lighting>(); lightSource)
+            {
+                auto lightSource = entity->getComponent<lighting>();
+                if (lightSourcesCount < 16)
                 {
-                    if (lightSourcesCount < 16)
-                    {
-                        lightColors[lightSourcesCount] = lightSource->color;
-                        lightTypes[lightSourcesCount] = lightSource->lightType;
-                        lightPositions[lightSourcesCount] = entity->localTransform.position;
-                        lightSourcesCount++;
-                    }
+                    lightColors[lightSourcesCount] = lightSource->color;
+                    lightTypes[lightSourcesCount] = lightSource->lightType;
+                    lightPositions[lightSourcesCount] = entity->localTransform.position;
+                    lightSourcesCount++;
+                    std::cout << entity->name << "\n";
+                    std::cout << "Light Sources Count : " << lightSourcesCount;
                 }
+            }
         }
 
         // If there is no camera, we return (we cannot render without a camera)
@@ -224,6 +227,7 @@ namespace our
                 command.material->shader->set("lightColors[" + std::to_string(i) + "]", lightColors[i]);
                 command.material->shader->set("lightTypes[" + std::to_string(i) + "]", lightTypes[i]);
             }
+            command.material->shader->set("lightCount", lightSourcesCount);
             glm::mat3 matrix = glm::mat3(transpose(inverse(command.localToWorld)));
             command.material->shader->set("modelInverseTranspose", matrix);
             command.material->shader->set("model", command.localToWorld);

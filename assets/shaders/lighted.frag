@@ -15,7 +15,7 @@ uniform sampler2D aoMap;
 uniform vec3 lightPositions[16]; // for directional lights: direction (negated in code)
 uniform vec3 lightColors[16];
 uniform int lightTypes[16];      // 0 = point, 1 = directional
-
+uniform int lightCount;
 uniform vec3 camPos;
 
 const float PI = 3.14159265359;
@@ -91,7 +91,7 @@ void main()
     vec3 F0 = mix(vec3(0.04), albedo, metallic);
 
     vec3 Lo = vec3(0.0);
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < lightCount; ++i)
     {
         vec3 L;
         float attenuation = 1.0;
