@@ -268,11 +268,11 @@ namespace our
             glm::vec3 playerPos = playerComponent->localTransform.position;
             glm::vec3 playerForward3D = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(0, 0, -1, 0));
             glm::vec3 playerRight3D   = glm::vec3(playerComponent->getLocalToWorldMatrix() * glm::vec4(1, 0, 0, 0));
-
+            
             // Project onto XZ plane (ignore Y)
             playerForward3D.y = 0.0f;
             playerRight3D.y = 0.0f;
-
+            
             glm::vec3 playerForward = glm::normalize(playerForward3D);
             glm::vec3 playerRight   = glm::normalize(playerRight3D);
             std::vector<int>collisionType;
@@ -308,7 +308,6 @@ namespace our
                     {
                         collisionType.push_back(5);
                     }
-
                 }
             }
         
