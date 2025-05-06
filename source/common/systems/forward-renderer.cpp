@@ -1,7 +1,7 @@
 #include "forward-renderer.hpp"
 #include "../mesh/mesh-utils.hpp"
 #include "../texture/texture-utils.hpp"
-
+#include "../components/light.hpp"
 namespace our
 {
 
@@ -122,7 +122,10 @@ namespace our
             delete postprocessMaterial;
         }
     }
-
+    glm::vec3 lightPositions[16];
+    glm::vec3 lightColors[16];
+    int lightTypes[16];
+    int lightSourcesCount = 0;
     void ForwardRenderer::render(World *world)
     {
         // First of all, we search for a camera and for all the mesh renderers
@@ -154,6 +157,18 @@ namespace our
                     opaqueCommands.push_back(command);
                 }
             }
+            if (entity->name == "lightSource")
+                if (auto lightSource = entity->getComponent<lighting>(); lightSource)
+                {
+                    printf("LIGHT SOURCE HENAAAAAAAAA");
+                    if (lightSourcesCount < 16)
+                    {
+                        lightColors[lightSourcesCount] = lightSource->color;
+                        lightTypes[lightSourcesCount] = lightSource->lightType;
+                        lightPositions[lightSourcesCount] = entity->localTransform.position;
+                        lightSourcesCount++;
+                    }
+                }
         }
 
         // If there is no camera, we return (we cannot render without a camera)
@@ -204,26 +219,12 @@ namespace our
             command.material->shader->set("view", view);
             command.material->shader->set("transform", VP * command.localToWorld);
             command.material->shader->set("camPos", cameraPos);
-            command.material->shader->set("lightPositions[0]", glm::vec3(-1.0, 0.0, 0.0));
-            command.material->shader->set("lightColors[0]", glm::vec3(5.0, 5.0, 5.0));
-            command.material->shader->set("lightTypes[0]", 1);
-
-            command.material->shader->set("lightPositions[1]", glm::vec3(0.0, 0.0, 0.0));
-            command.material->shader->set("lightColors[1]", glm::vec3(100.0, 100.0, 100.0));
-            command.material->shader->set("lightTypes[1]", 0);
-            // command.material->shader->set("lightPositions[2]", glm::vec3(2.5, 3.0, 0.0));
-            // command.material->shader->set("lightColors[2]", glm::vec3(100.0, 100.0, 100.0));
-
-            // command.material->shader->set("lightPositions[3]", glm::vec3(2.0, 3.0, 0.0));
-            // command.material->shader->set("lightColors[3]", glm::vec3(100.0, 100.0, 100.0));
-            // command.material->shader->set("lightPositions[4]", glm::vec3(3.5, 3.0, 0.0));
-            // command.material->shader->set("lightColors[4]", glm::vec3(100.0, 100.0, 100.0));
-            // command.material->shader->set("lightPositions[5]", glm::vec3(4, 3.0, 0.0));
-            // command.material->shader->set("lightColors[5]", glm::vec3(100.0, 100.0, 100.0));
-            // command.material->shader->set("lightPositions[6]", glm::vec3(5, 3.0, 0.0));
-            // command.material->shader->set("lightColors[6]", glm::vec3(100.0, 100.0, 100.0));
-            // command.material->shader->set("lightPositions[7]", glm::vec3(8, 0.0, 0.0));
-            // command.material->shader->set("lightColors[7]", glm::vec3(100.0, 100.0, 100.0));
+            for (size_t i = 0; i < lightSourcesCount; ++i)
+            {
+                command.material->shader->set("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+                command.material->shader->set("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+                command.material->shader->set("lightTypes[" + std::to_string(i) + "]", lightTypes[i]);
+            }
             glm::mat3 matrix = glm::mat3(transpose(inverse(command.localToWorld)));
             command.material->shader->set("modelInverseTranspose", matrix);
             command.material->shader->set("model", command.localToWorld);

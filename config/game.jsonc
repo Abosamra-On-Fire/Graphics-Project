@@ -701,7 +701,25 @@
                         
                     }
                 ]
+            },
+            {
+                "name":"lightSource",
+                "position": [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                ],
+                "components": [
+                    {
+                        "type":"lighting",
+                        "lightType":1,
+                        "color":[
+                            5,5,5
+                        ]
+                    }
+                ]
             }
+
         ]
     },
     "arrow_config": {
