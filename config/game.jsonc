@@ -1040,11 +1040,35 @@
                     }
                 ]
             }
-            //,
+            ,
             // {
-            //     "position": [0, 1, 2],
-            //     "rotation": [0, 0, 0],
-            //     "scale": [2, 2, 2],
+            //     "position": [30,0, -45],
+            //     "rotation": [0, 60, 0],
+            //     "scale": [4,4,4],
+            //     "components": [
+            //         {
+            //             "type": "Mesh Renderer",
+            //             "mesh": "plane",
+            //             "material": "glass"
+            //         }
+            //     ]
+            // },
+            // {
+            //     "position": [20,0, -45],
+            //     "rotation": [0, 60, 0],
+            //     "scale": [4,4,4],
+            //     "components": [
+            //         {
+            //             "type": "Mesh Renderer",
+            //             "mesh": "plane",
+            //             "material": "glass"
+            //         }
+            //     ]
+            // },
+            // {
+            //     "position": [10,0, -45],
+            //     "rotation": [0, 40, 0],
+            //     "scale": [4,4,4],
             //     "components": [
             //         {
             //             "type": "Mesh Renderer",

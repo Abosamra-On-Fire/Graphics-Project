@@ -18,7 +18,11 @@ namespace our {
     class FreeCameraControllerSystem {
         Application *app; // The application in which the state runs
         bool mouse_locked = false; // Is the mouse locked
-        bool z_is_clicked = false;
+        bool is_z_clicked=false;
+        // bool is_collided_forward=false;  
+        // bool is_collided_backword=false;
+        // bool is_collided_right=false;  
+        // bool is_collided_left=false;    
         glm::vec3 last_front_direction = {0.0f, 0.0f, -1.0f}; //currently used for arrow
         glm::vec3 last_camera_position = {0.0f, 0.0f, 0.0f}; //currently used for arrow
 
@@ -26,11 +30,11 @@ namespace our {
         // When a state enters, it should call this function and give it the pointer to the application
         void enter(Application *app) {
             this->app = app;
-            z_is_clicked = false;
+            is_z_clicked = false;
         }
 
-        // This should be called every frame to update all entities containing a FreeCameraControllerComponent
-        void update(World *world, float deltaTime) {
+        // This should be called every frame to update all entities containing a FreeCameraControllerComponent 
+        void update(World* world, float deltaTime,bool is_collided_forward,bool is_collided_backword,bool is_collided_right,bool is_collided_left) {
             // First of all, we search for an entity containing both a CameraComponent and a FreeCameraControllerComponent
             // As soon as we find one, we break
             CameraComponent *camera = nullptr;
@@ -46,39 +50,46 @@ namespace our {
             Entity *entity = camera->getOwner();
 
             // If the left mouse button is pressed, we lock and hide the mouse. This common in First Person Games.
-            if (!z_is_clicked) {
-                if (!mouse_locked) {
+            if(!is_z_clicked)
+            {
+                if(!mouse_locked){
                     app->getMouse().lockMouse(app->getWindow());
                     mouse_locked = true;
                 }
-            } else {
-                if (app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1) && !mouse_locked) {
-                    app->getMouse().lockMouse(app->getWindow());
-                    mouse_locked = true;
-                    // If the left mouse button is released, we unlock and unhide the mouse.
-                } else if (!app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1) && mouse_locked) {
-                    app->getMouse().unlockMouse(app->getWindow());
-                    mouse_locked = false;
-                }
+                
             }
-        
+           else { 
+            if(app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1) && !mouse_locked){
+                app->getMouse().lockMouse(app->getWindow());
+                mouse_locked = true;
+            // If the left mouse button is released, we unlock and unhide the mouse.
+            } else if(!app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1) && mouse_locked) {
+                app->getMouse().unlockMouse(app->getWindow());
+                mouse_locked = false;
+            }
+        }
+
             // We get a reference to the entity's position and rotation
             glm::vec3 &position = entity->localTransform.position;
             glm::vec3 &rotation = entity->localTransform.rotation;
 
             // If the left mouse button is pressed, we get the change in the mouse location
             // and use it to update the camera rotation
-            if (!z_is_clicked) {
+            if(!is_z_clicked)
+            {
                 glm::vec2 delta = app->getMouse().getMouseDelta();
                 rotation.x -= delta.y * controller->rotationSensitivity;
                 rotation.y -= delta.x * controller->rotationSensitivity;
-            } else {
-                if (app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1)) {
-                    glm::vec2 delta = app->getMouse().getMouseDelta();
-                    rotation.x -= delta.y * controller->rotationSensitivity; // The y-axis controls the pitch
-                    rotation.y -= delta.x * controller->rotationSensitivity; // The x-axis controls the yaw
-                }
+
             }
+            else 
+            {
+                if(app->getMouse().isPressed(GLFW_MOUSE_BUTTON_1)){
+                glm::vec2 delta = app->getMouse().getMouseDelta();
+                rotation.x -= delta.y * controller->rotationSensitivity; // The y-axis controls the pitch
+                rotation.y -= delta.x * controller->rotationSensitivity; // The x-axis controls the yaw
+            }
+        }
 
             // We prevent the pitch from exceeding a certain angle from the XZ plane to prevent gimbal locks
             if (rotation.x < -glm::half_pi<float>() * 0.99f) rotation.x = -glm::half_pi<float>() * 0.99f;
@@ -109,17 +120,31 @@ namespace our {
             glm::vec3 current_sensitivity = controller->positionSensitivity;
             // If the LEFT SHIFT key is pressed, we multiply the position sensitivity by the speed up factor
             if(app->getKeyboard().isPressed(GLFW_KEY_LEFT_SHIFT)) current_sensitivity *= controller->speedupFactor;
-        
-            // We change the camera position based on the keys WASD
-            // S & W moves the player back and forth (only in XZ plane)
-            if(app->getKeyboard().isPressed(GLFW_KEY_W)) position += front * (deltaTime * current_sensitivity.z);
-            if(app->getKeyboard().isPressed(GLFW_KEY_S)) position -= front * (deltaTime * current_sensitivity.z);
-            // A & D moves the player left or right (only in XZ plane)
-            if(app->getKeyboard().isPressed(GLFW_KEY_D)) position += right * (deltaTime * current_sensitivity.x);
-            if(app->getKeyboard().isPressed(GLFW_KEY_A)) position -= right * (deltaTime * current_sensitivity.x);
-            
-            // Lock the Y position to its initial value (optional, if you want to completely prevent any Y movement)
-            // position.y = initialYPosition; // You would need to store this when the camera is initialized
+
+            // We change the camera position based on the keys WASD/QE
+            // S & W moves the player back and forth
+            if(app->getKeyboard().isPressed(GLFW_KEY_W) && !is_collided_forward) {
+                position += front * (deltaTime * current_sensitivity.z);
+            }
+            if(app->getKeyboard().isPressed(GLFW_KEY_S) && !is_collided_backword) {
+                position -= front * (deltaTime * current_sensitivity.z);
+            }
+            if(app->getKeyboard().isPressed(GLFW_KEY_D) && !is_collided_right) {
+                position += right * (deltaTime * current_sensitivity.x);
+            }
+            if(app->getKeyboard().isPressed(GLFW_KEY_A) && !is_collided_left) {
+                position -= right * (deltaTime * current_sensitivity.x);
+            }
+            // if(app->getKeyboard().isPressed(GLFW_KEY_S)) position += back * (deltaTime * current_sensitivity.z);
+            // // // Q & E moves the player up and down
+            // // if(app->getKeyboard().isPressed(GLFW_KEY_Q)) position += up * (deltaTime * current_sensitivity.y);
+            // // if(app->getKeyboard().isPressed(GLFW_KEY_E)) position -= up * (deltaTime * current_sensitivity.y);
+            // // A & D moves the player left or right 
+            // if(app->getKeyboard().isPressed(GLFW_KEY_D)) position += right * (deltaTime * current_sensitivity.x);
+            // if(app->getKeyboard().isPressed(GLFW_KEY_A)) position += left * (deltaTime * current_sensitivity.x);
+            if(app->getKeyboard().isPressed(GLFW_KEY_Z) ) {
+                is_z_clicked = !is_z_clicked;
+            }
         }
 
         // When the state exits, it should call this function to ensure the mouse is unlocked
