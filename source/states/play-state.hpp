@@ -98,6 +98,7 @@ class Playstate : public our::State {
 
         collisionSystem.init_collision_wall1(&world);
         arrowCollisionSystem.initialize(&world);
+        
     }
 
 

@@ -275,6 +275,26 @@ namespace our
             postprocessMaterial->setup();
             glBindVertexArray(postProcessVertexArray);
             glDrawArrays(GL_TRIANGLES, 0, 3);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, colorTarget->getOpenGLName());
+            postprocessMaterial->shader->set("color_sampler", 0);
+        
+
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, depthTarget->getOpenGLName());
+            postprocessMaterial->shader->set("depth_sampler", 1);
+        
+            postprocessMaterial->shader->set("inverse_projection", glm::inverse(camera->getProjectionMatrix(windowSize)));
+        
+            postprocessMaterial->shader->set("fog_color", glm::vec3(0.0f, 0.0f, 0.5f)); 
+            postprocessMaterial->shader->set("fog_power", 0.6f); 
+            postprocessMaterial->shader->set("fog_exponent", 0.02f); 
+            
+
+            glBindVertexArray(postProcessVertexArray);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glBindVertexArray(0);
         }
     }
 
