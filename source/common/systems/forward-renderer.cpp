@@ -1,7 +1,7 @@
 #include "forward-renderer.hpp"
 #include "../mesh/mesh-utils.hpp"
 #include "../texture/texture-utils.hpp"
-
+#include "../components/light.hpp"
 namespace our
 {
 
@@ -122,7 +122,10 @@ namespace our
             delete postprocessMaterial;
         }
     }
-
+    glm::vec3 lightPositions[16];
+    glm::vec3 lightColors[16];
+    int lightTypes[16];
+    int lightSourcesCount = 0;
     void ForwardRenderer::render(World *world)
     {
         // First of all, we search for a camera and for all the mesh renderers
@@ -154,6 +157,18 @@ namespace our
                     opaqueCommands.push_back(command);
                 }
             }
+            if (entity->name == "lightSource")
+                if (auto lightSource = entity->getComponent<lighting>(); lightSource)
+                {
+                    printf("LIGHT SOURCE HENAAAAAAAAA");
+                    if (lightSourcesCount < 16)
+                    {
+                        lightColors[lightSourcesCount] = lightSource->color;
+                        lightTypes[lightSourcesCount] = lightSource->lightType;
+                        lightPositions[lightSourcesCount] = entity->localTransform.position;
+                        lightSourcesCount++;
+                    }
+                }
         }
 
         // If there is no camera, we return (we cannot render without a camera)
@@ -171,7 +186,8 @@ namespace our
 
         // TODO: (Req 9) Get the camera ViewProjection matrix and store it in VP
         glm::mat4 VP = camera->getProjectionMatrix(windowSize) * camera->getViewMatrix();
-
+        glm::mat4 view = camera->getViewMatrix();
+        glm::mat4 projection = camera->getProjectionMatrix(windowSize);
         // TODO: (Req 9) Set the OpenGL viewport using viewportStart and viewportSize
         glViewport(0, 0, windowSize.x, windowSize.y);
 
@@ -194,10 +210,26 @@ namespace our
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // TODO: (Req 9) Draw all the opaque commands
         //  Don't forget to set the "transform" uniform to be equal the model-view-projection matrix for each render command
+        glm::vec3 cameraPos = glm::vec3(camera->getOwner()->localTransform.position);
         for (auto &command : opaqueCommands)
         {
             command.material->setup();
+            // command.material->shader->set("transform", VP);
+            command.material->shader->set("projection", projection);
+            command.material->shader->set("view", view);
             command.material->shader->set("transform", VP * command.localToWorld);
+            command.material->shader->set("camPos", cameraPos);
+            for (size_t i = 0; i < lightSourcesCount; ++i)
+            {
+                command.material->shader->set("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+                command.material->shader->set("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+                command.material->shader->set("lightTypes[" + std::to_string(i) + "]", lightTypes[i]);
+            }
+            glm::mat3 matrix = glm::mat3(transpose(inverse(command.localToWorld)));
+            command.material->shader->set("modelInverseTranspose", matrix);
+            command.material->shader->set("model", command.localToWorld);
+            glm::vec3 camera_position = glm::vec3(camera->getOwner()->getLocalToWorldMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            command.material->shader->set("camera_position", camera_position);
             command.mesh->draw();
         }
         // If there is a sky material, draw the sky

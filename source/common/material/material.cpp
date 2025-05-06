@@ -70,4 +70,49 @@ namespace our
         sampler = AssetLoader<Sampler>::get(data.value("sampler", ""));
     }
 
+    void litMaterial::setup() const
+    {
+        TintedMaterial::setup(); // Call base class setup
+        shader->use();
+        glActiveTexture(GL_TEXTURE1); // Activate texture unit 0
+        
+            textureAlbedo->bind();
+            shader->set("albedoMap", 1);
+        
+        glActiveTexture(GL_TEXTURE2); // Activate texture unit 0
+
+            textureMetallic->bind();
+            shader->set("metallicMap", 2);
+        
+        glActiveTexture(GL_TEXTURE3); // Activate texture unit 0
+
+            textureAmbientOcclusion->bind();
+            shader->set("aoMap", 3);
+        
+        glActiveTexture(GL_TEXTURE4); // Activate texture unit 0
+
+            textureRoughness->bind();
+            shader->set("roughnessMap", 4);
+        
+        glActiveTexture(GL_TEXTURE5); // Activate texture unit 0
+
+            textureNormal->bind();
+            shader->set("normalMap", 5);
+        
+    }
+
+    // This function reads the material data from a json object
+    void litMaterial::deserialize(const nlohmann::json &data)
+    {
+        TintedMaterial::deserialize(data);
+        if (!data.is_object())
+            return;
+        textureAlbedo = AssetLoader<Texture2D>::get(data.value("albedo", ""));
+        if (textureAlbedo)
+            printf("textureAlbedo Loaded");
+        textureRoughness = AssetLoader<Texture2D>::get(data.value("roughness", ""));
+        textureNormal = AssetLoader<Texture2D>::get(data.value("normal", ""));
+        textureMetallic = AssetLoader<Texture2D>::get(data.value("metallic", ""));
+        textureAmbientOcclusion = AssetLoader<Texture2D>::get(data.value("ambientOcclusion", ""));
+    }
 }

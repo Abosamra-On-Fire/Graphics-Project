@@ -24,6 +24,10 @@
                 "textured":{
                     "vs":"assets/shaders/textured.vert",
                     "fs":"assets/shaders/textured.frag"
+                },
+                "lit":{
+                    "vs":"assets/shaders/lighted.vert",
+                    "fs":"assets/shaders/lighted.frag"
                 }
             },
             "textures":{
@@ -39,7 +43,18 @@
                 "monkey": "assets/textures/monkey.png",
                 "egg": "assets/textures/egg.jpg",
                 "gold": "assets/textures/gold.jpg",
-                "monster": "assets/textures/ice_snow.jpg"
+                "monster": "assets/textures/ice_snow.jpg",
+                "albedo":"assets/textures/lighting/stylized-ice-cave-walls-albedo.png",
+                "ambientOcclusion":"assets/textures/lighting/stylized-ice-cave-walls-ao.png",
+                "roughness":"assets/textures/lighting/stylized-ice-cave-walls-roughness.png",
+                "metallic":"assets/textures/lighting/stylized-ice-cave-walls-metallic.png",
+                "normal":"assets/textures/lighting/stylized-ice-cave-walls-normal-dx.png",
+
+                "albedoWood": "assets/textures/lighting/oak-wood-bare_albedo.png",
+                "ambientOcclusionWood": "assets/textures/lighting/oak-wood-bare_ao.png",
+                "roughnessWood": "assets/textures/lighting/oak-wood-bare_roughness.png",
+                "metallicWood": "assets/textures/lighting/oak-wood-bare_metallic.png",
+                "normalWood": "assets/textures/lighting/oak-wood-bare_normal-dx.png"
             },
             "meshes":{
                 "cube": "assets/models/cube.obj",
@@ -63,8 +78,8 @@
             },
             "materials":{
                 "metal":{
-                    "type": "tinted",
-                    "shader": "tinted",
+                    "type": "textured",
+                    "shader": "textured",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -73,7 +88,12 @@
                             "enabled": true
                         }
                     },
-                    "tint": [0.45, 0.4, 0.5, 1]
+                    "tint": [0.45, 0.4, 0.5, 1],
+                    "albedo":"albedo",
+                    "ambientOcclusion":"ambientOcclusion",
+                    "metallic":"metallic",
+                    "roughness":"roughness",
+                    "normal":"normal"
                 },
                 // "gold":{
                 //     "type": "tinted",
@@ -89,8 +109,8 @@
                 //     "tint": [0.45, 0.4, 0.5, 1]
                 // },
                 "glass":{
-                    "type": "textured",
-                    "shader": "textured",
+                    "type": "lit",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -108,7 +128,12 @@
                     "transparent": true,
                     "tint": [1, 1, 1, 1],
                     "texture": "glass",
-                    "sampler": "pixelated"
+                    "sampler": "pixelated",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "air":{
                     "type": "textured",
@@ -133,8 +158,8 @@
                     "sampler": "pixelated"
                 },
                 "wood":{
-                    "type": "textured",
-                    "shader": "textured",
+                    "type": "lit",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -146,7 +171,12 @@
                     "transparent": false,
                     "tint": [1, 1, 1, 1],
                     "texture": "wood",
-                    "sampler": "pixelated"
+                    "sampler": "pixelated",
+                    "albedo": "albedoWood",
+                    "ambientOcclusion": "ambientOcclusionWood",
+                    "metallic": "metallicWood",
+                    "roughness": "roughnessWood",
+                    "normal": "normalWood"
                 },
                 "gold":{
                     "type": "textured",
@@ -162,11 +192,16 @@
                     "transparent": false,
                     "tint": [1, 1, 1, 1],
                     "texture": "gold",
-                    "sampler": "pixelated"
+                    "sampler": "pixelated",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "grass":{
-                    "type": "textured",
-                    "shader": "textured",
+                    "type": "lit",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -177,7 +212,12 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "grass",
-                    "sampler": "default"
+                    "sampler": "default",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "ice":{
                     "type": "textured",
@@ -192,11 +232,16 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "ice",
-                    "sampler": "default"
+                    "sampler": "default",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "ice_water1":{
-                    "type": "textured",
-                    "shader": "textured",
+                    "type": "lit",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -207,11 +252,16 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "ice_water1",
-                    "sampler": "default"
+                    "sampler": "default",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "monkey":{
-                    "type": "textured",
-                    "shader": "textured",
+                    "type": "lit",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -222,7 +272,12 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "monkey",
-                    "sampler": "default"
+                    "sampler": "default",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "crossbow":{
                     "type": "textured",
@@ -255,8 +310,8 @@
                     "sampler": "default"
                 },
                 "monster":{
-                    "type": "textured",
-                    "shader": "textured",
+                    "type": "lit",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -267,11 +322,16 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "monster",
-                    "sampler": "default"
+                    "sampler": "default",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "moon":{
-                    "type": "textured",
-                    "shader": "textured",
+                    "type": "lit",
+                    "shader": "lit",
                     "pipelineState": {
                         "faceCulling":{
                             "enabled": false
@@ -282,7 +342,12 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "moon",
-                    "sampler": "default"
+                    "sampler": "default",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 },
                 "arrow_material": {
                     "type": "textured",
@@ -292,7 +357,12 @@
                     },
                     "tint": [1, 1, 1, 1],
                     "texture": "wood",
-                    "sampler": "default"
+                    "sampler": "default",
+                    "albedo": "albedo",
+                    "ambientOcclusion": "ambientOcclusion",
+                    "metallic": "metallic",
+                    "roughness": "roughness",
+                    "normal": "normal"
                 }
             }
         },
@@ -417,7 +487,7 @@
                     {
                         "type": "Mesh Renderer",
                         "mesh": "ring",
-                        "material": "gold"
+                        "material": "air"
                     }
                 ]
             },
@@ -433,6 +503,7 @@
                     }
                 ]
             },
+            
             {//coins
                 "rotation": [0, 0, 0],
                 "position": [3, 1, -86],
@@ -709,7 +780,25 @@
                         
                     }
                 ]
+            },
+            {
+                "name":"lightSource",
+                "position": [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                ],
+                "components": [
+                    {
+                        "type":"lighting",
+                        "lightType":1,
+                        "color":[
+                            5,5,5
+                        ]
+                    }
+                ]
             }
+
         ]
     },
     "arrow_config": {
