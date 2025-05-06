@@ -38,7 +38,7 @@ namespace our
             if(entity->name == "hallway")
             {
                 wall = entity;
-                vertices3 = loadVerticesInYRange("assets/models/hallway.obj",wall);
+                vertices3 = loadVerticesInYRange("assets/models/truss.obj",wall);
             }
         }
         std::cout << "Wall vertices: " << vertices.size() << ", Wall2 vertices: " << vertices2.size() << ", Hallway vertices: " << vertices3.size() << "\n";

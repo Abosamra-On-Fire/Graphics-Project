@@ -1,7 +1,7 @@
 {
     "start-scene": "menu",
     "window": {
-        "title": "Default Game Window",
+        "title": "SHUTTER FROST",
         "size": {
             "width": 1280,
             "height": 720
@@ -676,7 +676,7 @@
                     {
                         "type": "Mesh Renderer",
                         "mesh": "ring",
-                        "material": "gold"
+                        "material": "air"
                     }
                 ]
             },
@@ -701,7 +701,7 @@
                     {
                         "type": "Mesh Renderer",
                         "mesh": "truss",
-                        "material": "gold"
+                        "material": "air"
                     }
                 ]
             },
@@ -726,7 +726,7 @@
                     {
                         "type": "Mesh Renderer",
                         "mesh": "truss",
-                        "material": "gold"
+                        "material": "air"
                     }
                 ]
             },
@@ -751,7 +751,7 @@
                     {
                         "type": "Mesh Renderer",
                         "mesh": "truss",
-                        "material": "gold"
+                        "material": "air"
                     }
                 ]
             },
@@ -776,7 +776,7 @@
                     {
                         "type": "Mesh Renderer",
                         "mesh": "truss",
-                        "material": "gold"
+                        "material": "air"
                     }
                 ]
             },
