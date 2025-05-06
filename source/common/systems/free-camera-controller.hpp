@@ -123,18 +123,90 @@ namespace our {
 
             // We change the camera position based on the keys WASD/QE
             // S & W moves the player back and forth
-            if(app->getKeyboard().isPressed(GLFW_KEY_W) && !is_collided_forward) {
-                position += front * (deltaTime * current_sensitivity.z);
-            }
-            if(app->getKeyboard().isPressed(GLFW_KEY_S) && !is_collided_backword) {
-                position -= front * (deltaTime * current_sensitivity.z);
-            }
-            if(app->getKeyboard().isPressed(GLFW_KEY_D) && !is_collided_right) {
-                position += right * (deltaTime * current_sensitivity.x);
-            }
-            if(app->getKeyboard().isPressed(GLFW_KEY_A) && !is_collided_left) {
-                position -= right * (deltaTime * current_sensitivity.x);
-            }
+// W only
+if (app->getKeyboard().isPressed(GLFW_KEY_W) &&
+    !app->getKeyboard().isPressed(GLFW_KEY_S) &&
+    !app->getKeyboard().isPressed(GLFW_KEY_A) &&
+    !app->getKeyboard().isPressed(GLFW_KEY_D) &&
+    !is_collided_forward) {
+    
+    position += front * (deltaTime * current_sensitivity.z);
+}
+
+// S only
+else if (app->getKeyboard().isPressed(GLFW_KEY_S) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_W) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_A) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_D) &&
+         !is_collided_backword) {
+    
+    position -= front * (deltaTime * current_sensitivity.z);
+}
+
+// D only
+else if (app->getKeyboard().isPressed(GLFW_KEY_D) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_W) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_S) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_A) &&
+         !is_collided_right) {
+    
+    position += right * (deltaTime * current_sensitivity.x);
+}
+
+// A only
+else if (app->getKeyboard().isPressed(GLFW_KEY_A) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_W) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_S) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_D) &&
+         !is_collided_left) {
+    
+    position -= right * (deltaTime * current_sensitivity.x);
+}
+
+// W + D
+else if (app->getKeyboard().isPressed(GLFW_KEY_W) &&
+         app->getKeyboard().isPressed(GLFW_KEY_D) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_S) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_A) &&
+         !is_collided_forward && !is_collided_right) {
+    
+    glm::vec3 moveDir = glm::normalize(front + right);
+    position += moveDir * (deltaTime * current_sensitivity.z);
+}
+
+// W + A
+else if (app->getKeyboard().isPressed(GLFW_KEY_W) &&
+         app->getKeyboard().isPressed(GLFW_KEY_A) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_S) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_D) &&
+         !is_collided_forward && !is_collided_left) {
+    
+    glm::vec3 moveDir = glm::normalize(front - right);
+    position += moveDir * (deltaTime * current_sensitivity.z);
+}
+
+// S + D
+else if (app->getKeyboard().isPressed(GLFW_KEY_S) &&
+         app->getKeyboard().isPressed(GLFW_KEY_D) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_W) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_A) &&
+         !is_collided_backword && !is_collided_right) {
+    
+    glm::vec3 moveDir = glm::normalize(-front + right);
+    position += moveDir * (deltaTime * current_sensitivity.z);
+}
+
+// S + A
+else if (app->getKeyboard().isPressed(GLFW_KEY_S) &&
+         app->getKeyboard().isPressed(GLFW_KEY_A) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_W) &&
+         !app->getKeyboard().isPressed(GLFW_KEY_D) &&
+         !is_collided_backword && !is_collided_left) {
+    
+    glm::vec3 moveDir = glm::normalize(-front - right);
+    position += moveDir * (deltaTime * current_sensitivity.z);
+}
+
             // if(app->getKeyboard().isPressed(GLFW_KEY_S)) position += back * (deltaTime * current_sensitivity.z);
             // // // Q & E moves the player up and down
             // // if(app->getKeyboard().isPressed(GLFW_KEY_Q)) position += up * (deltaTime * current_sensitivity.y);
