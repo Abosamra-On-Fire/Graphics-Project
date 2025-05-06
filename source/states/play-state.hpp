@@ -207,12 +207,12 @@ class Playstate : public our::State {
     void onDraw(double deltaTime) override {
         // Here, we just run a bunch of systems to control the world logic
         movementSystem.update(&world, (float)deltaTime);
-        int  collision_val=collisionSystem.update(&world, (float)deltaTime);
-        bool is_collidied_forword=(collision_val==2);
-        bool is_collidied_backword=(collision_val==3);
-        bool is_collidied_right=(collision_val==4);
-        bool is_collidied_left=(collision_val==5);
-        cameraController.update(&world, (float)deltaTime,is_collidied_forword,is_collidied_backword,is_collidied_right,is_collidied_left);
+        std::vector<int> collision_val;  collision_val=collisionSystem.update(&world, (float)deltaTime);
+        bool is_collidied_forward  = std::find(collision_val.begin(), collision_val.end(), 2) != collision_val.end();
+        bool is_collidied_backward = std::find(collision_val.begin(), collision_val.end(), 3) != collision_val.end();
+        bool is_collidied_right    = std::find(collision_val.begin(), collision_val.end(), 4) != collision_val.end();
+        bool is_collidied_left     = std::find(collision_val.begin(), collision_val.end(), 5) != collision_val.end();
+        cameraController.update(&world, (float)deltaTime,is_collidied_forward,is_collidied_backward,is_collidied_right,is_collidied_left);
         auto& keyboard = getApp()->getKeyboard();
 
 
